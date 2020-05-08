@@ -1,0 +1,38 @@
+Package: dPCP
+Title: Digital PCR Cluster Predictor: a flexible and sensitive algorithm for 
+        the automated analysis of multiplex digital PCR data
+Version: 0.9.0
+Authors@R: c(person(given = "Alfonso", family = "De Falco",
+                    role = c("aut", "cre"), 
+                    email = "alfonso.defalco@lns.etat.lu"),
+            person(given = "Daniel", family = "Stieber", role = c("ctb")),
+            person(given = "Michel", family = "Mittelbronn", role = c("ctb")))
+Description: digital PCR Cluster Predictor is an algorithm for the automated
+        clustering of digital PCR data. dPCP can cluster data with up to 4 
+        targets and calculate their concentration.
+        The details about input and data parameters are available in the 
+        vignette. 
+License: Artistic-2.0
+Encoding: UTF-8
+LazyData: true
+Depends: R (>= 3.6.0)
+Imports: 
+    dbscan,
+    e1071,
+    ggplot2,
+    ggpubr,
+    graphics,
+    raster,
+    rlist,
+    scales,
+    shiny,
+    shinyjs,
+    stats,
+    stringr,
+    utils
+RoxygenNote: 7.1.0
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat
+VignetteBuilder: knitr

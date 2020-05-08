@@ -1,0 +1,17 @@
+citHeader("To cite dPCP use:")
+
+citEntry(entry = "Manual",
+title = "digital PCR Cluster Predictor: automated anylsis of multiplex digital
+PCR data",
+author = personList(as.person("Alfonso De Falco"),
+as.person("Daniel Stieber"),
+as.person("Michel Mittelbronn")),
+year = "2020",
+url = "https://CRAN.R-project.org/package=dPCP",
+textVersion =
+paste("Alfonso De Falco, Daniel Stieber, Michel Mittelbronn (2020).",
+"digital PCR Cluster Predictor: automated anylsis of multiplex digital PCR
+data.",
+"R package version 1.0.0.",
+"https://CRAN.R-project.org/package=dPCP")
+)

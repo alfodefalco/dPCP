@@ -1,0 +1,12 @@
+Sample name;Chip ID/Well ID;No of targets;FAM target;Target 3;Target 4;VIC/HEX target;Reference;Dilution
+10 ng;A01;3;TBP;NA;NAGK;RPPH1;dilution20200313_B01_Amplitude.csv;1
+5 ng;B01;3;TBP;NA;NAGK;RPPH1;;1
+2.5 ng;C01;3;TBP;NA;NAGK;RPPH1;dilution20200313_B01_Amplitude.csv;1
+1.25 ng;D01;3;TBP;NA;NAGK;RPPH1;dilution20200313_B01_Amplitude.csv;1
+0.625 ng;E01;3;TBP;NA;NAGK;RPPH1;dilution20200313_B01_Amplitude.csv;1
+0.31 ng;F01;3;TBP;NA;NAGK;RPPH1;dilution20200313_B01_Amplitude.csv;1
+0.156 ng;G01;3;TBP;NA;NAGK;RPPH1;dilution20200313_B01_Amplitude.csv;1
+0.078 ng;H01;3;TBP;NA;NAGK;RPPH1;dilution20200313_B01_Amplitude.csv;1
+0.039 ng;A04;3;TBP;NA;NAGK;RPPH1;dilution20200313_B01_Amplitude.csv;1
+0.0195 ng;B04;3;TBP;NA;NAGK;RPPH1;dilution20200313_B01_Amplitude.csv;1
+NTC;F04;3;TBP;NA;NAGK;RPPH1;dilution20200313_B01_Amplitude.csv;1
