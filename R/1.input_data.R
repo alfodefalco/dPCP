@@ -21,7 +21,7 @@
 #' with all combinations of eps and minPts.
 #' Each reference generates a different pdf file.
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' library(dPCP)
 #'
 #' #Find path of sample table and location of reference and input files
@@ -182,8 +182,8 @@ dbscan_combination <- function(refID, system = NULL, file.location = ".",
 #' Read sample table
 #'
 #' This function reads a file containing the essential information about the
-#' samples. The file has to be filled out by the user and formatted as
-#' described in the vignette.
+#' samples and experimental settings. The file has to be filled out by the user
+#' and formatted as described in the vignette.
 #' @inheritParams dPCP
 #' @return An object of class \code{sample_table}.
 #' @examples
@@ -223,7 +223,7 @@ read_sampleTable <- function(file, system = NULL, file.location = ".") {
          sample files location")
 
 
-  sample.table <- utils::read.csv2(file,
+  sample.table <- utils::read.csv(file,
                                    stringsAsFactors = FALSE,
                                    na.strings = c("NA", ""))
 
@@ -301,10 +301,6 @@ read_sampleTable <- function(file, system = NULL, file.location = ".") {
       any(sample.table$Dilution > 1) ||
       any(sample.table$Dilution <= 0))
     stop("Invalid value for Dilution.")
-
-  if (any(duplicated(paste0(sample.table$Sample.name, "_",
-                            sample.table$Chip.ID))))
-    stop("One or more samples have the same Sample.name and Chip-Well ID.")
 
   class(sample.table) <- "sample_table"
   return(sample.table)
@@ -631,7 +627,7 @@ read_sample <- function(sample.table, system = NULL, file.location = ".",
 
   if ((system == "Thermo Fisher") & (
     length(sample.quality) > 1 &
-    length(sample.quality) != length(unique(sample.table$Chip.ID.Well.ID))))
+    length(sample.quality) != length(sample.table$Chip.ID.Well.ID)))
     stop("Invalid value for 'sample.quality'. It must be a numeric value or
          a numeric vector of lenght equal to the number of samples")
 

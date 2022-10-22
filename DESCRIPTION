@@ -1,24 +1,30 @@
 Package: dPCP
-Title: Digital PCR Cluster Predictor: a flexible and sensitive algorithm for 
-        the automated analysis of multiplex digital PCR data
-Version: 0.9.0
+Title: Automated Analysis of Multiplex Digital PCR Data
+Version: 1.0.4
 Authors@R: c(person(given = "Alfonso", family = "De Falco",
                     role = c("aut", "cre"), 
-                    email = "alfonso.defalco@lns.etat.lu"),
+                    email = "alfonsodefalco90@gmail.com",
+                    comment = c(ORCID = "0000-0001-9985-9920")),
+            person(given = "Michel", family = "Mittelbronn", role = c("ctb")),
+            person(given = "Christophe", family = "Olinger", role = c("ctb")),
             person(given = "Daniel", family = "Stieber", role = c("ctb")),
-            person(given = "Michel", family = "Mittelbronn", role = c("ctb")))
-Description: digital PCR Cluster Predictor is an algorithm for the automated
-        clustering of digital PCR data. dPCP can cluster data with up to 4 
-        targets and calculate their concentration.
-        The details about input and data parameters are available in the 
-        vignette. 
-License: Artistic-2.0
+            person(given = "Laboratoire national de santé", role = c("cph")))
+Description: The automated clustering and quantification of the digital PCR
+            data is based on the combination of 'DBSCAN' (Hahsler et al. (2019)
+            <doi:10.18637/jss.v091.i01>) and 'c-means' (Bezdek et al. (1981) 
+            <doi:10.1007/978-1-4757-0450-1>) algorithms.
+            The analysis is independent of multiplexing geometry, dPCR system, 
+            and input amount.
+            The details about input data and parameters are available in the
+            vignette. 
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Depends: R (>= 3.6.0)
+Depends: R (>= 4.0.0)
 Imports: 
     dbscan,
     e1071,
+    exactci,
     ggplot2,
     ggpubr,
     graphics,
@@ -30,7 +36,7 @@ Imports:
     stats,
     stringr,
     utils
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 Suggests: 
     knitr,
     rmarkdown,

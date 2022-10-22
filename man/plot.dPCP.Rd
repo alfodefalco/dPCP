@@ -9,7 +9,6 @@ dPCP(
   file,
   system = NULL,
   file.location = ".",
-  deep = FALSE,
   reference.quality = 0.5,
   sample.quality = 0.5,
   eps = 200,
@@ -18,16 +17,7 @@ dPCP(
   rain = TRUE
 )
 
-\method{plot}{dPCP}(
-  x,
-  ...,
-  sample = "all",
-  reference = "all",
-  type = "dPCP",
-  save.plot = FALSE,
-  format = "png",
-  dpi = 300
-)
+\method{plot}{dPCP}(x, ..., sample = "all", reference = "all", type = "dPCP")
 }
 \arguments{
 \item{file}{character. The name or the path of csv file to be read. If it
@@ -42,9 +32,6 @@ also accepted.}
 files location. The default corresponds to the working directory,
 (\code{\link[base]{getwd}}). Tilde expansion (see
 (\code{\link[base]{path.expand}})) is performed.}
-
-\item{deep}{logical. If TRUE deep workflow is adopted
-adopted.}
 
 \item{reference.quality}{numeric. Between 0 and 1. Quality threshold to
 subset the data. If different thresholds have to be applied to various
@@ -80,35 +67,27 @@ reference samples is saved. When \code{system} is Thermo Fisher,
 \item{...}{Arguments to be passed to methods}
 
 \item{sample}{'all' to show all samples, or a numeric vector indicating
-the row number of samples in the project table.}
+the row number of samples in the sample table.}
 
 \item{reference}{'all' to show all reference samples, or a character vector
 with chip ID (Thermo Fisher) or the file name (Bio-rad) of reference
 samples to be showed.}
 
 \item{type}{string. Type of plot to be showed. Available plots:
-'reference dbscan', 'sample dbscan' (just for deep analysis), 'centers',
-'cmeans', 'rain', 'dPCP'.}
-
-\item{save.plot}{logical. If TRUE the plots are exported to a file.}
-
-\item{format}{a string indicating the file format for the export.
-Available formats: 'eps', 'ps', 'tex', 'pdf', 'jpeg', 'tiff', 'png',
-'bmp', 'svg', 'wmf'.}
-
-\item{dpi}{numeric. Image resolution.}
+'reference dbscan', 'centers', 'cmeans', 'rain', 'dPCP'.}
 }
 \value{
 An object of class \code{dPCP} containing the following components:
   \item{referenceDB}{an object of class \code{reference_dbscan}.}
-  \item{samples}{a list of samples. Every sample sublist contains the
-  significant information about the clustering analysis.}
+  \item{samples}{a list of samples. Each sample sublist contains the
+  information about the cluster analysis.}
   \item{results}{an object of class \code{replicates_quant}.}
 }
 \description{
 This function carries out the autometed clustering of digital PCR data.
 }
 \examples{
+\donttest{
 library(dPCP)
 
 #Find path of sample table and location of reference and input files
@@ -119,8 +98,8 @@ fileLoc <- system.file("extdata", package = "dPCP")
 
 #dPCP analysis
 results <- dPCP(sampleTable, system = "bio-rad", file.location = fileLoc,
-                deep = FALSE, eps = 200, minPts = 50, save.template = FALSE,
-                rain = TRUE)
+                eps = 200, minPts = 50, save.template = FALSE, rain = TRUE)
 
-plot(results, sample = 1, type = "dPCP", save.plot = FALSE)
+plot(results, sample = 1, type = "dPCP")
+}
 }

@@ -7,7 +7,7 @@
 \usage{
 rain_reclus(cmeans.cluster)
 
-\method{plot}{rain_reclus}(x, ..., sample = "all", save.plot = FALSE, format = "png", dpi = 300)
+\method{plot}{rain_reclus}(x, ..., sample = "all")
 }
 \arguments{
 \item{cmeans.cluster}{an object of class \code{cmeans_clus}, inherited
@@ -18,15 +18,7 @@ from \code{\link{cmeans_clus}}.}
 \item{...}{Arguments to be passed to methods}
 
 \item{sample}{'all' to show all samples, or a numeric vector indicating
-the row number of samples in the project table.}
-
-\item{save.plot}{logical. If TRUE the plots are exported to a file.}
-
-\item{format}{a string indicating the file format for the export.
-Available formats: 'eps', 'ps', 'tex', 'pdf', 'jpeg', 'tiff', 'png',
-'bmp', 'svg', 'wmf'.}
-
-\item{dpi}{numeric. Image resolution.}
+the row number of samples in the sample table.}
 }
 \value{
 An object of class \code{rain_reclus} containing a sublist for
@@ -43,7 +35,7 @@ Mahalanobis distance. Each "rain" element is assigned to the cluster whose
 Mahalanobis distance is the lowest.
 }
 \examples{
-\dontrun{
+\donttest{
 library(dPCP)
 
 #Find path of sample table and location of reference and input files
@@ -76,6 +68,6 @@ cmclus <- cmeans_clus(cent)
 #Rain classification.
 rainclus <- rain_reclus(cmclus)
 
-plot(rainclus, sample = "all", save.plot = FALSE)
+plot(rainclus, sample = "all")
 }
 }

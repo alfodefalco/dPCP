@@ -14,16 +14,16 @@ report_dPCP(data, filename, sample = "all")
 create on disk.}
 
 \item{sample}{'all' to show all samples, or a numeric vector indicating
-the row number of samples in the project table.}
+the row number of samples in the sample table.}
 }
 \value{
-A pdf file with the information and results of dPCP analysis.
+A pdf file with the information and results of the dPCP analysis.
 }
 \description{
-This function exports dPCP analysis results to a pdf report.
+This function generates a pdf report of the dPCP analysis.
 }
 \examples{
-\dontrun{
+\donttest{
 library(dPCP)
 
 #Find path of sample table and location of reference and input files
@@ -34,7 +34,7 @@ fileLoc <- system.file("extdata", package = "dPCP")
 
 #dPCP analysis
 results <- dPCP(sampleTable, system = "bio-rad", file.location = fileLoc,
-                deep = FALSE, eps = 200, minPts = 50, save.template = FALSE,
+                eps = 200, minPts = 50, save.template = FALSE,
                 rain = TRUE)
 
 report_dPCP(results, filename = "dPCRproject_1")

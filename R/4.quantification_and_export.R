@@ -1,7 +1,7 @@
 #' Calculation of targets concentration.
 #'
-#' This function calculates the concentration of targets, using a Poisson
-#' distribution algorithm.
+#' This function calculates the concentration of the targets according to the
+#' Poisson distribution.
 #' @param data.cluster an object of class \code{rain_reclus} or
 #'   \code{cmeans_clus}.
 #' @inheritParams read_sample
@@ -9,9 +9,9 @@
 #'   each sample. Each sublist has the following components:
 #'   \item{quality}{quality threshold used in \code{\link{read_sample}}.}
 #'   \item{reference}{reference ID.}
-#'   \item{raw results}{a data frame with the results of statistical analysis.}
+#'   \item{raw results}{a data frame with the results of the quantification.}
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' library(dPCP)
 #'
 #' #Find path of sample table and location of reference and input files
@@ -136,11 +136,36 @@ target_quant <- function(data.cluster, sample.table) {
 
     pos_rate <- results$N.pos / results$totalwells
 
-    lower_CI_pos_rate <- pos_rate - 1.96 * sqrt(pos_rate * (1 - pos_rate)/
-                                                  results$totalwells)
+    ci <- lapply(seq(length(pos_rate)), function(x) {
 
-    upper_CI_pos_rate <- pos_rate + 1.96 * sqrt(pos_rate * (1 - pos_rate)/
-                                                  results$totalwells)
+      if (results$N.pos[x] == 0) {
+        pois <- exactci::poisson.exact(
+          results$N.pos[x], results$totalwells[x], alternative = "two.sided",
+          tsmethod = "central", midp = TRUE)
+
+        c(pois$conf.int[1], pois$conf.int[2])
+
+      } else if (results$N.pos[x] < 100) {
+        pois <- exactci::poisson.exact(
+          results$N.pos[x], results$totalwells[x], alternative = "two.sided",
+          tsmethod = "central", midp = FALSE)
+
+        c(pois$conf.int[1], pois$conf.int[2])
+
+      } else {
+
+        c(pos_rate[x] - 1.96 * sqrt(pos_rate[x] * (1 - pos_rate[x])/
+                                      results$totalwells[x]),
+          pos_rate[x] + 1.96 * sqrt(pos_rate[x] * (1 - pos_rate[x])/
+                                      results$totalwells[x]))
+      }
+    })
+
+    ci <- do.call(rbind, ci)
+
+    lower_CI_pos_rate <- ci[, 1]
+
+    upper_CI_pos_rate <- ci[, 2]
 
     lambda <- - log(1 - pos_rate)
 
@@ -199,11 +224,11 @@ target_quant <- function(data.cluster, sample.table) {
 #'   every sample. Each sublist has the following components:
 #'   \item{quality}{quality threshold used in \code{\link{read_sample}}.}
 #'   \item{reference}{reference ID.}
-#'   \item{raw results}{a data frame with the results of statistical analysis.}
-#'   \item{replicates results}{a data frame with the results of statistical
-#'   analysis of pooled replicates.}
+#'   \item{raw results}{a data frame with the results of quantification.}
+#'   \item{replicates results}{a data frame with the results of quantification
+#'   of pooled replicates.}
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' library(dPCP)
 #'
 #' #Find path of sample table and location of reference and input files
@@ -292,11 +317,32 @@ replicates_quant <- function(raw.results, sample.table) {
 
         pos_rate <- pos_tot / total_tot
 
-        lower_CI_pos_rate <- pos_rate - 1.96 * sqrt(pos_rate * (1 - pos_rate) /
-                                                      total_tot)
+        if (pos_tot == 0) {
+          pois <- exactci::poisson.exact(
+            pos_tot, total_tot, alternative = "two.sided",
+            tsmethod = "central", midp = TRUE)
 
-        upper_CI_pos_rate <- pos_rate + 1.96 * sqrt(pos_rate * (1 - pos_rate) /
-                                                      total_tot)
+          lower_CI_pos_rate <- pois$conf.int[1]
+
+          upper_CI_pos_rate <- pois$conf.int[2]
+
+        } else if (pos_tot < 100) {
+          pois <- exactci::poisson.exact(
+            pos_tot, total_tot, alternative = "two.sided",
+            tsmethod = "central", midp = FALSE)
+
+          lower_CI_pos_rate <- pois$conf.int[1]
+
+          upper_CI_pos_rate <- pois$conf.int[2]
+
+        } else {
+
+          lower_CI_pos_rate <- pos_rate -
+            1.96 * sqrt(pos_rate * (1 - pos_rate) / total_tot)
+
+          upper_CI_pos_rate <- pos_rate +
+            1.96 * sqrt(pos_rate * (1 - pos_rate) / total_tot)
+        }
 
         lambda <- - log(1 - pos_rate)
 
@@ -365,12 +411,12 @@ replicates_quant <- function(raw.results, sample.table) {
 
 #' Export dPCP analysis results to a pdf report
 #'
-#' This function exports dPCP analysis results to a pdf report.
+#' This function generates a pdf report of the dPCP analysis.
 #' @inheritParams manual_correction
 #' @inheritParams dPCP
-#' @return A pdf file with the information and results of dPCP analysis.
+#' @return A pdf file with the information and results of the dPCP analysis.
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' library(dPCP)
 #'
 #' #Find path of sample table and location of reference and input files
@@ -381,7 +427,7 @@ replicates_quant <- function(raw.results, sample.table) {
 #'
 #' #dPCP analysis
 #' results <- dPCP(sampleTable, system = "bio-rad", file.location = fileLoc,
-#'                 deep = FALSE, eps = 200, minPts = 50, save.template = FALSE,
+#'                 eps = 200, minPts = 50, save.template = FALSE,
 #'                 rain = TRUE)
 #'
 #' report_dPCP(results, filename = "dPCRproject_1")
@@ -486,7 +532,7 @@ report_dPCP <- function(data, filename, sample = "all") {
   })
 
   ggpubr::ggexport(plotlist = step1, filename = paste0(filename, ".pdf"),
-                   width = 8, height = 8, res = 300)
+                   width = 8, height = 11, res = 300)
 }
 
 
@@ -498,7 +544,7 @@ report_dPCP <- function(data, filename, sample = "all") {
 #' @inheritParams manual_correction
 #' @return A csv file with the information and results of dPCP analysis.
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' library(dPCP)
 #'
 #' #Find path of sample table and location of reference and input files
@@ -509,7 +555,7 @@ report_dPCP <- function(data, filename, sample = "all") {
 #'
 #' #dPCP analysis
 #' results <- dPCP(sampleTable, system = "bio-rad", file.location = fileLoc,
-#'                 deep = FALSE, eps = 200, minPts = 50, save.template = FALSE,
+#'                 eps = 200, minPts = 50, save.template = FALSE,
 #'                 rain = TRUE)
 #'
 #' export_csv(results, filename = "dPCRproject_1")

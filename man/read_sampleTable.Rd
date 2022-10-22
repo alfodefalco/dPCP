@@ -25,8 +25,8 @@ An object of class \code{sample_table}.
 }
 \description{
 This function reads a file containing the essential information about the
-samples. The file has to be filled out by the user and formatted as
-described in the vignette.
+samples and experimental settings. The file has to be filled out by the user
+and formatted as described in the vignette.
 }
 \examples{
 library(dPCP)

@@ -29,7 +29,7 @@ This function builds an interactive app to manually correct the dPCP
 cluster analysis.
 }
 \examples{
-\dontrun{
+\donttest{
 library(dPCP)
 
 #Find path of sample table and location of reference and input files
@@ -40,9 +40,9 @@ fileLoc <- system.file("extdata",package = "dPCP")
 
 #dPCP analysis
 results <- dPCP(sampleTable, system = "bio-rad", file.location = fileLoc,
-                deep = FALSE, eps = 200, minPts = 50, save.template = FALSE,
+                eps = 200, minPts = 50, save.template = FALSE,
                 rain = TRUE)
 
-manual_correction(results, filename = "manual_dPCR")
+manual_correction(results, filename = "manual_dPCR", save.plot = FALSE)
 }
 }

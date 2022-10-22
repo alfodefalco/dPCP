@@ -18,14 +18,14 @@ An object of class \code{target_quant} containing a sublist for
   each sample. Each sublist has the following components:
   \item{quality}{quality threshold used in \code{\link{read_sample}}.}
   \item{reference}{reference ID.}
-  \item{raw results}{a data frame with the results of statistical analysis.}
+  \item{raw results}{a data frame with the results of the quantification.}
 }
 \description{
-This function calculates the concentration of targets, using a Poisson
-distribution algorithm.
+This function calculates the concentration of the targets according to the
+Poisson distribution.
 }
 \examples{
-\dontrun{
+\donttest{
 library(dPCP)
 
 #Find path of sample table and location of reference and input files

@@ -18,16 +18,16 @@ An object of class \code{replicates_quant} containing a sublist for
   every sample. Each sublist has the following components:
   \item{quality}{quality threshold used in \code{\link{read_sample}}.}
   \item{reference}{reference ID.}
-  \item{raw results}{a data frame with the results of statistical analysis.}
-  \item{replicates results}{a data frame with the results of statistical
-  analysis of pooled replicates.}
+  \item{raw results}{a data frame with the results of quantification.}
+  \item{replicates results}{a data frame with the results of quantification
+  of pooled replicates.}
 }
 \description{
 This function calculates the concentration of the targets, combining the
 results of the replicates of each sample.
 }
 \examples{
-\dontrun{
+\donttest{
 library(dPCP)
 
 #Find path of sample table and location of reference and input files

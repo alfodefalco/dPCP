@@ -1,19 +1,7 @@
 ---
-title: "Digital PCR Cluster Predictor: a Universal Tool for the Automated
-        Analysis of Multiplex Digital PCR Data"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Digital PCR Cluster Predictor: a Universal Tool for the Automated Analysis of Multiplex Digital PCR Data}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+title: 'Digital PCR Cluster Predictor: a universal R-package and shiny app for the
+  automated analysis of multiplex digital PCR data'
 ---
-
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
-```
 
 ## Introduction
 Digital polymerase chain reaction (dPCR) is a PCR-based technology that enables
@@ -28,13 +16,13 @@ multiplex digital PCR data with up to four targets. dPCP supports the analysis o
 
 ## dPCP input data and workflow
 dPCP requires two types of input files:
-
--	A file containing the raw data of either QuantStudio 3D Digital PCR System (“.eds” file) or QX100/QX200 Droplet Digital PCR System (“.csv” file) for each sample and reference. 
+    
+-	A file containing the raw data of either QuantStudio 3D Digital PCR System (".eds" file) or QX100/QX200 Droplet Digital PCR System (".csv" file) for each sample and reference. 
 The raw data of QX100/QX200 system can be exported from QuantSoft software selecting *Export Amplitude and Cluster data* in the *Options* pane, it is fundamental to keep the default file name and prepare the plate setup always for two targets (Channel1 and Channel2), even for singleplex assays;  
 -	A *sample table*. The sample table is a csv file containing the information about the samples and the experiment settings.
 
 The sample table has nine columns:
-
+    
 1.	*Sample name*. The name to be assigned to a sample. The samples with the same name are considerate replicates. The field is not mandatory; the samples without a name are not replicates.
 2.	*Chip ID/Well ID*. This field is mandatory. For QuantStudio 3D Digital PCR System the chip ID is required, while for QX100/QX200 Droplet Digital PCR System the well ID has to be provided (e.g. A01). 
 Chip and well ID are used to identify the raw data files, therefore the default file name must not be changed.
@@ -51,34 +39,26 @@ detected with a VIC/HEX probe;
 8.	*Reference*. For QuantStudio 3D Digital PCR System the chip ID of the reference is required, while for QX100/QX200 Droplet Digital PCR System the complete file name (with file extension) of the reference raw data file has to be provided (e.g. example_A01_Amplitude.csv). If the field is empty, the corresponding sample is considered as reference and used to identify the empty partitions and single-target clusters. In this scenario, the sample must have all the requirements to be used as reference (see below). The samples from other runs can be used as reference but in case of experiments with QX100/QX200 Droplet Digital PCR System, the name of the reference file has to be changed to remove the well ID, which could interfere with the samples well IDs.
 9.	*Dilution*.  This field is mandatory and must be a numeric value
 representing the dilution ratio of the sample (e.g. 1:5 dilution has to be
-indicated as 0.2).
+                                               indicated as 0.2).
 
 The sample table has to be filled out by the user with the required information. The table format is fundamental for the analysis and must not be changed. 
-A file named *Template_sampleTable.csv* is saved as an example file of this package and can be used as template:
-```{r, results = "hide", eval = FALSE}
-#Show the content of sample table template
-read.csv(system.file("extdata", "Template_sampleTable.csv", package = "dPCP"),
-          stringsAsFactors = FALSE, na.strings = c("NA", ""))
-
-#Copy the template to working directory
-file.copy(system.file("extdata", "Template_sampleTable.csv", package = "dPCP"), getwd())
-```
+A file named *Template_sampleTable.csv* is saved as an example file of this package and can be used as template.
 
 The first step carried out by dPCP is the collection of data and information from the input files. 
 It is fundamental to generate high-quality data for the reference because dPCP starts the identification of clusters from the reference. 
 The ideal reference has:
-
+    
 - The same experimental settings and conditions of the corresponding sample (e.g. sequences and concentrations of primers and probes, cycling protocol, nucleic acid type, etc.)
 -	Sufficient input amount to promote the formation at least of high-density empty partitions and single-target clusters;
 -	Correct clustering of data;
 -	Negligible presence of rain;
 -	Non-cross-reactive probes (see Quality control).
 
-dPCP identifies the empty partitions and single-target clusters in the reference using the non-parametric algorithm called density-based spatial clustering of applications with noise (Ester et al., 1996; Hahsler et al., 2019) (DBSCAN). Maximum distance (ε) between cluster elements and the number of minimum elements (minPts) to assemble a cluster are the input parameters to be chosen by the users. The function *dbscan_combination()* (see Quality control) helps the user to identify the most suitable ε and minPts values.
+dPCP identifies the empty partitions and single-target clusters in the reference using the non-parametric algorithm called density-based spatial clustering of applications with noise (Ester et al., 1996; Hahsler et al., 2019) (DBSCAN). Maximum distance (epsilon) between cluster elements and the number of minimum elements (minPts) to assemble a cluster are the input parameters to be chosen by the users. The function *dbscan_combination()* (see Quality control) helps the user to identify the most suitable epsilon and minPts values.
 
 After the identification of empty partitions and single-target clusters, their centroid position is identified by computing the arithmetic mean of the coordinates of their data elements. The distance between a cluster centroid and the centroid of empty partitions can be represented by a Euclidean vector. As the coordinates of the centroids of multi-target clusters are predicted to be the sum of the coordinates of the centroids of single-target clusters, the position of the centroid of multi-target clusters can be calculated by computing the vector sum of vectors representing the distance of the centroid the single-target clusters to the centroids of empty partitions. 
 
-The clustering analysis of sample data is carried out by the unsupervised competitive learning version of the c-means algorithm (Bezdek, 1981; Lai Chung and Lee, 1994; Pal et al., 1996). The principle of fuzzy c-means algorithm is to minimize the variance within the cluster. The intra-cluster variance is defined as the sum of the squared distance of all cluster elements from the cluster centroid. The fluorescence values of sample elements and the coordinates of all centroids are used as input parameter for the analysis. The output of the c-means analysis is a matrix showing the probability of membership of the data elements to each cluster. Each data element is assigned to the cluster whose probability is the highest.
+The clustering analysis of sample data is carried out by the c-means algorithm (Bezdek, 1981; Lai Chung and Lee, 1994; Pal et al., 1996). The principle of fuzzy c-means algorithm is to minimize the variance within the cluster. The intra-cluster variance is defined as the sum of the squared distance of all cluster elements from the cluster centroid. The fluorescence values of sample elements and the coordinates of all centroids are used as input parameter for the analysis. The output of the c-means analysis is a matrix showing the probability of membership of the data elements to each cluster. Each data element is assigned to the cluster whose probability is the highest.
 If the highest probability is lower than 0.5 a data element is classified as rain and its membership is recalculated with Mahalanobis distance (Mahalanobis, 1936). Mahalanobis distance computes the distance between a point and a distribution, it is based on measuring at multidimensional level how many standard deviations away is a point from the mean of a distribution. 
 The rain-tagged elements are assigned to the cluster with the lowest Mahalanobis distance. 
 
@@ -87,81 +67,30 @@ The cluster results can be corrected manually by the user with the shiny-based f
 Finally, the copies per partition of each target are calculated according to a Poisson model. (Hindson et al., 2011). Precision is calculated as previously described (Majumdar et al., 2015). Replicates can be combined and the copies per partition are re-calculated.
 
 A complete analysis can be executed by the function *dPCP()*. 
-```{r, results = "hide", eval = FALSE}
-library(dPCP)
-
-#Find path of sample table and location of reference and input files
-sampleTable <- system.file("extdata", "Template_sampleTable.csv", 
-                           package = "dPCP")
-
-fileLoc <- system.file("extdata",package = "dPCP")
-
-#Lunch dPCP analysis
-results <- dPCP(sampleTable, system = "bio-rad", file.location = fileLoc,
-                 , eps = 200, minPts = 50, save.template = FALSE, rain = TRUE)
-```
 
 Alternatively, a step by step analysis can be carried out following the
-abovementioned pipeline:
-```{r, results = "hide", eval = FALSE}
-library(dPCP)
-#Find path of sample table and location of reference and input files
-sampleTable <- system.file("extdata", "Template_sampleTable.csv", 
-                           package = "dPCP")
+abovementioned pipeline.
 
-fileLoc <- system.file("extdata",package = "dPCP")
-
-#Read sample table file
-sample.table <- read_sampleTable(sampleTable, system = "bio-rad", 
-                                 file.location = fileLoc)
-
-#Read reference files
-ref <- read_reference(sample.table, system = "bio-rad", 
-                      file.location = fileLoc)
-
-#Read samples files
-samp <- read_sample(sample.table, system = "bio-rad", file.location = fileLoc)
-
-#Reference DBSCAN clustering
-dbref <- reference_dbscan(ref, sample.table, save.template = FALSE)
-
-#Predict position of clusters centroid from reference DBSCAN results
-cent <- centers_data(samp, sample.table,dbref)
-
-#Fuzzy c-means clustering
-cmclus <- cmeans_clus(cent)
-
-#Rain classification.
-rainclus <- rain_reclus(cmclus)
-
-#Quantification
-quantcm <- target_quant(cmclus, sample.table)
-quant <- target_quant(rainclus, sample.table)
-
-#Replicates pooling
-rep.quant <- replicates_quant(quant, sample.table) 
-```
-
-dPCP is available also as web app accessible through a web browser at https://dpcp.lns.lu/.
+dPCP is available also as web app accessible through a web browser at (link).
 
 
 ## Quality control
 Quality controls were developed for the fundamental steps of dPCP analysis. Along with the clustering algorithm, the function *dbscan_combination()* and the *plot()* S3 method were implemented to have a graphical view of the results and to check the quality of the following processes: 
-
+    
 1. Choice of DBSCAN input parameters. The identification of empty partitions and single-target clusters in the reference is the first step of dPCP analysis and relies on the DBSCAN algorithm.
-The performance of DBSCAN depends on the input parameters *ε* and *minPts* that are the only two values the user has to adapt for dPCP analysis.
-In order to simplify the choice of input values, we developed the function *dbscan_combination()* that carries out a DBSCAN simulation for the combinations of *ε* and *minPts* values chosen by the user. The function generates a pdf file for each reference, showing a scatterplot for each combination.
+The performance of DBSCAN depends on the input parameters *epsilon* and *minPts* that are the only two values the user has to adapt for dPCP analysis.
+In order to simplify the choice of input values, we developed the function *dbscan_combination()* that carries out a DBSCAN simulation for the combinations of *epsilon* and *minPts* values chosen by the user. The function generates a pdf file for each reference, showing a scatterplot for each combination.
 The ideal combination of input values is chosen according to the following criteria:
-
-    * identification of the majority of data elements of empty partitions cluster and all single-target clusters; 
-    * absence of multiple subclusters;
-    * the identified area has to be centred in the cluster centroid.
+    
+* identification of the majority of data elements of empty partitions cluster and all single-target clusters; 
+* absence of multiple subclusters;
+* the identified area has to be centred in the cluster centroid.
 
 An example of *dbscan_combination* output is showed in Figure 1.
 
 <br/>
-
-<center><img src=Figure1.png alt="Examples of output plots of dbscan_combination." style="width:700px;height:500px;"></center> 
+    
+<center><img src=[Figure1.png](vignettes/Figure1.png) alt="Examples of output plots of dbscan_combination." style="width:700px;height:500px;"></center> 
 **Fig. 1: Examples of the output plots of dbscan_combination().** Each graph represents the DBSCAN analysis performed with different combinations of input parameters eps and minPts. Assembled clusters are represented with colored dots; different colors indicate distinct clusters whereas grey dots show not-clustered elements.
 The combinations (A), (B), (C), and (D) of DBSCAN input parameters are not suitable for a dPCP analysis because:
 (A)	None of the single-target clusters is identified.  
@@ -172,66 +101,65 @@ The combinations (E) and (F) identified the empty partitions cluster and all sin
 
 
 <br/>
-
+    
 2. DBSCAN analysis of reference. At the end of cluster analysis, the results of DBSCAN analysis of each reference can be represented in a scatterplot using the S3 method *plot*. 
 4. Identification of clusters centroid. The S3 method *plot* can be used also to verify the correct position of all cluster centroids. If the predicted position of the centroid of multi-target clusters does not match the real position of centroids, cross-reaction between probes or poor assay optimization could be the cause (Fig. 2).
 5. C-means and rain analysis. The S3 method *plot* is available also to show the scatterplot of c-means and rain analysis.
 
 <br/>
-
-<center><img src=Figure2.png alt="Quality control ofthe centroids position prediction." style="width:600px;height:300px;"></center>
-
+    
+<center><img src=[Figure2.png](vignettes/Figure2.png) alt="Quality control of the centroids position prediction." style="width:600px;height:300px;"></center>
 **Fig. 2: Quality control of the centroids coordinates prediction.**
 (A)	The prediction of coordinates of multi-target cluster centroid did not match the real position. The shift of centroid position can be the consequence of cross-reactive probes or poor assay optimization. 
 (B)	The position of clusters centroids were correctly predicted.
 
 <br/>
-
-
-## Data export
-The results and analysis information can be exported to a csv file with the
+    
+    
+    ## Data export
+    The results and analysis information can be exported to a csv file with the
 function *export_csv()*. The exported file consists of three tables:
-
+    
 -	Reference samples table reporting the following information:
-    -	Reference: reference ID;
-    -	Quality: quality threshold;
-    -	eps: value used for the reference DBSCAN analysis;
-    -	minPts: values used for the reference DBSCAN analysis;
+-	Reference: reference ID;
+-	Quality: quality threshold;
+-	eps: value used for the reference DBSCAN analysis;
+-	minPts: values used for the reference DBSCAN analysis;
 -	Results table reporting the following information:
     -	Sample: sample name and ID;
-    -	Target: target name;
-    -	Negative reactions: number of negative reactions;
-    -	Total reactions: number of total reactions with quality higher than the
-    threshold;
-    -	lambda: average number of copies per reaction;
-    -	Lower CI lambda: lower 95 % confidence interval of lambda;
-    -	Upper CI lambda: upper 95 % confidence interval of lambda;
-    -	Copies/μl: target concentration;
-    -	Lower CI copies/μl: lower 95 % confidence interval of target concentration;
-    -	Upper CI copies/μl: upper 95 % confidence interval of target concentration;
-    -	Copies/μl at sample dilution: target concentration before dilution;
-    -	Lower CI copies/μl at sample dilution: lower 95 % confidence interval of
-    Copies/μl at sample dilution;
-    -	Upper CI copies/μl at sample dilution: upper 95 % confidence interval of
-    Copies/μl at sample dilution;
-    -	Precision: size of the confidence interval for distinguishing between two
-    sample concentrations at a given confidence level;
-    -	Dilution: dilution factor;
-    -	Quality: quality threshold;
-    -	Reference: reference ID;
+-	Target: target name;
+-	Negative reactions: number of negative reactions;
+-	Total reactions: number of total reactions with quality higher than the
+threshold;
+-	lambda: average number of copies per reaction;
+-	Lower CI lambda: lower 95 % confidence interval of lambda;
+-	Upper CI lambda: upper 95 % confidence interval of lambda;
+-	Copies/ul: target concentration;
+-	Lower CI copies/ul: lower 95 % confidence interval of target concentration;
+-	Upper CI copies/ul: upper 95 % confidence interval of target concentration;
+-	Copies/ul at sample dilution: target concentration before dilution;
+-	Lower CI copies/ul at sample dilution: lower 95 % confidence interval of
+Copies/ul at sample dilution;
+-	Upper CI copies/ul at sample dilution: upper 95 % confidence interval of
+Copies/ul at sample dilution;
+-	Precision: size of the confidence interval for distinguishing between two
+sample concentrations at a given confidence level;
+-	Dilution: dilution factor;
+-	Quality: quality threshold;
+-	Reference: reference ID;
 -	Replicates results table reporting the following information:
     -	Sample: sample name and chip ID;
-    -	Target: target name;
-    -	Copies/μl: target concentration;
-    -	Lower CI copies/μl: lower 95 % confidence interval of target concentration;
-    -	Upper CI copies/μl: upper 95 % confidence interval of target concentration;
-    -	Precision: size of the confidence interval for distinguishing between two
-    sample           concentrations at a given confidence level;
-    -	No of replicates: number of replicates.
-    
+-	Target: target name;
+-	Copies/ul: target concentration;
+-	Lower CI copies/ul: lower 95 % confidence interval of target concentration;
+-	Upper CI copies/ul: upper 95 % confidence interval of target concentration;
+-	Precision: size of the confidence interval for distinguishing between two
+sample           concentrations at a given confidence level;
+-	No of replicates: number of replicates.
+
 A summary report can be generated with the function *report_pdf()*. 
 The output is a pdf file containing: 
-
+    
 -	the plot of dPCP clustering analysis, 
 -	the sample quality threshold and dilution; 
 -	the reference ID, quality threshold and input parameters of DBSCAN
@@ -242,23 +170,23 @@ abovementioned csv file.
 When the shiny-based function *manual_correction()* is used, the results tables and pdf report can be exported directly within the shiny window clicking the "Export data" button.
 
 <br/>
-
-
+    
+    
 ## References
 Bezdek,J.C. (1981) Pattern Recognition with Fuzzy Objective Function Algorithms Springer US, Boston, MA.
 
-Ester,M. et al. (1996) A Density-Based Algorithm for Discovering Clusters in Large Spatial Databases with Noise. In, Proceedings of the 2nd International Conference on Knowledge Discovery and Data Mining., pp. 226–231.
+Ester,M. et al. (1996) A Density-Based Algorithm for Discovering Clusters in Large Spatial Databases with Noise. In, Proceedings of the 2nd International Conference on Knowledge Discovery and Data Mining., pp. 226-231.
 
-Hahsler,M. et al. (2019) dbscan: Fast Density-Based Clustering with R. J. Stat. Softw., 91, 1–30.
+Hahsler,M. et al. (2019) dbscan: Fast Density-Based Clustering with R. J. Stat. Softw., 91, 1-30.
 
-Hindson,B.J. et al. (2011) High-throughput droplet digital PCR system for absolute quantitation of DNA copy number. Anal. Chem., 83, 8604–8610.
+Hindson,B.J. et al. (2011) High-throughput droplet digital PCR system for absolute quantitation of DNA copy number. Anal. Chem., 83, 8604-8610.
 
-Lai Chung,F. and Lee,T. (1994) Fuzzy competitive learning. Neural Networks, 7, 539–551.
+Lai Chung,F. and Lee,T. (1994) Fuzzy competitive learning. Neural Networks, 7, 539-551.
 
-Mahalanobis,P.P.C. (1936) On the generalized distance in statistics. Proc. Natl. Inst. Sci. India, 2, 49–55.
+Mahalanobis,P.P.C. (1936) On the generalized distance in statistics. Proc. Natl. Inst. Sci. India, 2, 49-55.
 
 Majumdar,N. et al. (2015) Digital PCR modeling for maximal sensitivity, dynamic range and measurement precision. PLoS One, 10, e0118833.
 
-Pal,N.R. et al. (1996) Sequential competitive learning and the fuzzy c-means clustering algorithms. Neural Networks, 9, 787–796.
+Pal,N.R. et al. (1996) Sequential competitive learning and the fuzzy c-means clustering algorithms. Neural Networks, 9, 787-796.
 
-Whale,A.S. et al. (2016) Fundamentals of multiplexing with digital PCR. Biomol. Detect. Quantif., 10, 15–23.
+Whale,A.S. et al. (2016) Fundamentals of multiplexing with digital PCR. Biomol. Detect. Quantif., 10, 15-23.

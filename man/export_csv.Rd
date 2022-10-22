@@ -20,7 +20,7 @@ A csv file with the information and results of dPCP analysis.
 This function exports dPCP analysis results to a csv file.
 }
 \examples{
-\dontrun{
+\donttest{
 library(dPCP)
 
 #Find path of sample table and location of reference and input files
@@ -31,7 +31,7 @@ fileLoc <- system.file("extdata",package = "dPCP")
 
 #dPCP analysis
 results <- dPCP(sampleTable, system = "bio-rad", file.location = fileLoc,
-                deep = FALSE, eps = 200, minPts = 50, save.template = FALSE,
+                eps = 200, minPts = 50, save.template = FALSE,
                 rain = TRUE)
 
 export_csv(results, filename = "dPCRproject_1")

@@ -15,7 +15,7 @@
 #'   \item{membership}{a matrix with the membership values of the data elements
 #'   to the clusters. See also \code{\link[e1071]{cmeans}}}
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' library(dPCP)
 #'
 #' #Find path of sample table and location of reference and input files
@@ -45,7 +45,7 @@
 #' #Fuzzy c-means clustering
 #' cmclus <- cmeans_clus(cent)
 #'
-#' plot(cmclus, sample = "all", save.plot = FALSE)
+#' plot(cmclus, sample = "all")
 #' }
 #' @export
 
@@ -111,22 +111,11 @@ cmeans_clus <- function(centers.data) {
 #' @inheritParams dPCP
 #' @export
 
-plot.cmeans_clus <- function(x, ..., sample = "all", save.plot = FALSE,
-                             format = "png", dpi = 300) {
+plot.cmeans_clus <- function(x, ..., sample = "all") {
 
   if (all(sample != "all") & any(sample > length(x)))
     stop("sample must be `all` or a numeric vector indicating the row number of
          samples in sample.table")
-
-  if (!is.logical(save.plot))
-    stop("save.plot must be logical")
-
-  if (all(format != c("eps", "ps", "tex", "pdf", "jpeg", "tiff", "png", "bmp",
-                      "svg", "wmf")))
-    stop("Uknown format")
-
-  if (!is.numeric(dpi) || length(dpi) != 1) stop("dpi must be a numeric value")
-
 
   if (all(sample == "all")) {
     plotsample <- 1:length(x)
@@ -170,20 +159,6 @@ plot.cmeans_clus <- function(x, ..., sample = "all", save.plot = FALSE,
 
       guides(colour = guide_legend(override.aes = list(size = 2)))
 
-    if (isTRUE(save.plot)) {
-
-      not.allowed1 <- paste("\\\\", "/", ":", "\\*", "\\?", "\"", ">", "<",
-                            "\\|", sep = "|")
-
-      if (grepl(not.allowed1, names(x)[y])) {
-        new.name <- (gsub(not.allowed1, ".", names(x)[y]))
-      } else {
-        new.name <- names(x)[y]
-      }
-
-      ggsave(paste0(new.name, "_cmeansplot", ".", format), p, dpi = dpi)
-    }
-
     graphics::plot(p)
   })
   names(cmeansplot) <- names(x)[plotsample]
@@ -209,7 +184,7 @@ plot.cmeans_clus <- function(x, ..., sample = "all", save.plot = FALSE,
 #'   \item{data}{a data frame with the fluorescence intensities and clusters
 #'   name.}
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' library(dPCP)
 #'
 #' #Find path of sample table and location of reference and input files
@@ -242,7 +217,7 @@ plot.cmeans_clus <- function(x, ..., sample = "all", save.plot = FALSE,
 #' #Rain classification.
 #' rainclus <- rain_reclus(cmclus)
 #'
-#' plot(rainclus, sample = "all", save.plot = FALSE)
+#' plot(rainclus, sample = "all")
 #' }
 #' @export
 
@@ -317,22 +292,11 @@ rain_reclus <- function(cmeans.cluster) {
 #' @inheritParams dPCP
 #' @export
 
-plot.rain_reclus <- function(x, ..., sample = "all", save.plot = FALSE,
-                             format = "png", dpi = 300) {
+plot.rain_reclus <- function(x, ..., sample = "all") {
 
   if (all(sample != "all") & any(sample > length(x)))
     stop("sample must be `all` or a numeric vector indicating the row number of
          samples in sample.table")
-
-  if (!is.logical(save.plot))
-    stop("save.plot must be logical")
-
-  if (all(format != c("eps", "ps", "tex", "pdf", "jpeg", "tiff", "png", "bmp",
-                      "svg", "wmf")))
-    stop("Uknown format")
-
-  if (!is.numeric(dpi) || length(dpi) != 1) stop("dpi must be a numeric value")
-
 
   if (all(sample == "all")) {
     plotsample <- 1:length(x)
@@ -377,20 +341,6 @@ plot.rain_reclus <- function(x, ..., sample = "all", save.plot = FALSE,
 
       guides(colour = guide_legend(override.aes = list(size = 2)))
 
-    if (isTRUE(save.plot)) {
-
-      not.allowed1 <- paste("\\\\", "/", ":", "\\*", "\\?", "\"", ">", "<",
-                            "\\|", sep = "|")
-
-      if (grepl(not.allowed1, names(x)[y])) {
-        new.name <- (gsub(not.allowed1, ".", names(x)[y]))
-      } else {
-        new.name <- names(x)[y]
-      }
-
-      ggsave(paste0(new.name, "_dPCPplot", ".", format), p, dpi = dpi)
-    }
-
     graphics::plot(p)
   })
   names(dPCPplot) <- names(x)[plotsample]
@@ -408,10 +358,14 @@ plot.rain_reclus <- function(x, ..., sample = "all", save.plot = FALSE,
 #'   \code{\link{dPCP}}.
 #' @param filename character. File name (no extension) for csv and pdf files to
 #'   create on disk.
-#' @inheritParams dPCP
+#' @param  save.plot logical. If TRUE the plots are exported to a file.
+#' @param  format a string indicating the file format for the export.
+#'   Available formats: 'eps', 'ps', 'tex', 'pdf', 'jpeg', 'tiff', 'png',
+#'   'bmp', 'svg', 'wmf'.
+#' @param dpi numeric. Image resolution.
 #' @return A Shiny session.
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' library(dPCP)
 #'
 #' #Find path of sample table and location of reference and input files
@@ -422,10 +376,10 @@ plot.rain_reclus <- function(x, ..., sample = "all", save.plot = FALSE,
 #'
 #' #dPCP analysis
 #' results <- dPCP(sampleTable, system = "bio-rad", file.location = fileLoc,
-#'                 deep = FALSE, eps = 200, minPts = 50, save.template = FALSE,
+#'                 eps = 200, minPts = 50, save.template = FALSE,
 #'                 rain = TRUE)
 #'
-#' manual_correction(results, filename = "manual_dPCR")
+#' manual_correction(results, filename = "manual_dPCR", save.plot = FALSE)
 #' }
 #' @export
 #' @import shiny
@@ -741,11 +695,42 @@ manual_correction <- function(data, filename, save.plot = FALSE,
 
           pos_rate <- results$N.pos / results$totalwells
 
-          lower_CI_pos_rate <- pos_rate - 1.96 *
-            sqrt(pos_rate * (1 - pos_rate) / results$totalwells)
+          ci <- lapply(seq(length(pos_rate)), function(x) {
 
-          upper_CI_pos_rate <- pos_rate + 1.96 *
-            sqrt(pos_rate * (1 - pos_rate) / results$totalwells)
+            if (results$N.pos[x] == 0) {
+              pois <- exactci::poisson.exact(
+                results$N.pos[x], results$totalwells[x],
+                alternative = "two.sided", tsmethod = "central", midp = TRUE)
+
+              c(pois$conf.int[1], pois$conf.int[2])
+
+            } else if (results$N.pos[x] < 100) {
+              pois <- exactci::poisson.exact(
+                results$N.pos[x], results$totalwells[x],
+                alternative = "two.sided", tsmethod = "central", midp = FALSE)
+
+              c(pois$conf.int[1], pois$conf.int[2])
+
+            } else {
+
+              c(pos_rate[x] - 1.96 * sqrt(pos_rate[x] * (1 - pos_rate[x])/
+                                            results$totalwells[x]),
+                pos_rate[x] + 1.96 * sqrt(pos_rate[x] * (1 - pos_rate[x])/
+                                            results$totalwells[x]))
+            }
+          })
+
+          ci <- do.call(rbind, ci)
+
+          lower_CI_pos_rate <- ci[, 1]
+
+          upper_CI_pos_rate <- ci[, 2]
+
+          #lower_CI_pos_rate <- pos_rate - 1.96 *
+          # sqrt(pos_rate * (1 - pos_rate) / results$totalwells)
+
+          #upper_CI_pos_rate <- pos_rate + 1.96 *
+          #sqrt(pos_rate * (1 - pos_rate) / results$totalwells)
 
           lambda <- - log(1 - pos_rate)
 
@@ -960,7 +945,7 @@ manual_correction <- function(data, filename, save.plot = FALSE,
 
           if (isTRUE(save.plot)) {
             ggsave(paste0(names(data$samples)[x], "_manual.", format), graph.p,
-                   dpi = dpi)
+                   dpi = dpi, width = 9, height = 9)
           }
 
           tot <- ggpubr::ggarrange(graph.p, text.p, tb1, ncol = 1,
@@ -993,11 +978,32 @@ manual_correction <- function(data, filename, save.plot = FALSE,
 
               pos_rate <- pos_tot / total_tot
 
-              lower_CI_pos_rate <- pos_rate - 1.96 *
-                sqrt(pos_rate * (1 - pos_rate) / total_tot)
+              if (pos_tot == 0) {
+                pois <- exactci::poisson.exact(pos_tot, total_tot,
+                                      alternative = "two.sided",
+                                      tsmethod = "central", midp = TRUE)
 
-              upper_CI_pos_rate <- pos_rate + 1.96 *
-                sqrt(pos_rate * (1 - pos_rate) / total_tot)
+                lower_CI_pos_rate <- pois$conf.int[1]
+
+                upper_CI_pos_rate <- pois$conf.int[2]
+
+              } else if (pos_tot < 100) {
+                pois <- exactci::poisson.exact(pos_tot, total_tot,
+                                      alternative = "two.sided",
+                                      tsmethod = "central", midp = FALSE)
+
+                lower_CI_pos_rate <- pois$conf.int[1]
+
+                upper_CI_pos_rate <- pois$conf.int[2]
+
+              } else {
+
+                lower_CI_pos_rate <- pos_rate -
+                  1.96 * sqrt(pos_rate * (1 - pos_rate) / total_tot)
+
+                upper_CI_pos_rate <- pos_rate +
+                  1.96 * sqrt(pos_rate * (1 - pos_rate) / total_tot)
+              }
 
               lambda <- - log(1 - pos_rate)
 
@@ -1094,7 +1100,7 @@ manual_correction <- function(data, filename, save.plot = FALSE,
 
         ggpubr::ggexport(plotlist = report,
                          filename = paste0(filename, ".pdf"), width = 8,
-                         height = 8, res = 300)
+                         height = 11, res = 300)
       })
     })
   }

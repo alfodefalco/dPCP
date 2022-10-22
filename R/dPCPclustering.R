@@ -11,8 +11,6 @@
 #' files location. The default corresponds to the working directory,
 #' (\code{\link[base]{getwd}}). Tilde expansion (see
 #' (\code{\link[base]{path.expand}})) is performed.
-#' @param  deep logical. If TRUE deep workflow is adopted
-#'   adopted.
 #' @param  reference.quality numeric. Between 0 and 1. Quality threshold to
 #'   subset the data. If different thresholds have to be applied to various
 #'   reference samples, a vectror of the same length of number of reference
@@ -39,10 +37,11 @@
 #' @rdname plot.dPCP
 #' @return An object of class \code{dPCP} containing the following components:
 #'   \item{referenceDB}{an object of class \code{reference_dbscan}.}
-#'   \item{samples}{a list of samples. Every sample sublist contains the
-#'   significant information about the clustering analysis.}
+#'   \item{samples}{a list of samples. Each sample sublist contains the
+#'   information about the cluster analysis.}
 #'   \item{results}{an object of class \code{replicates_quant}.}
 #' @examples
+#' \donttest{
 #' library(dPCP)
 #'
 #' #Find path of sample table and location of reference and input files
@@ -53,20 +52,18 @@
 #'
 #' #dPCP analysis
 #' results <- dPCP(sampleTable, system = "bio-rad", file.location = fileLoc,
-#'                 deep = FALSE, eps = 200, minPts = 50, save.template = FALSE,
-#'                 rain = TRUE)
+#'                 eps = 200, minPts = 50, save.template = FALSE, rain = TRUE)
 #'
-#' plot(results, sample = 1, type = "dPCP", save.plot = FALSE)
+#' plot(results, sample = 1, type = "dPCP")
+#' }
 #' @export
 
-dPCP <- function(file, system = NULL, file.location = ".", deep = FALSE,
+dPCP <- function(file, system = NULL, file.location = ".",
                  reference.quality = 0.5, sample.quality = 0.5,
                  eps = 200, minPts = 50, save.template = FALSE,
                  rain = TRUE) {
 
   if (!is.logical(rain)) stop("rain must be logical")
-
-  if (!is.logical(deep)) stop("deep must be logical")
 
   #Read samples table
   samTable <- read_sampleTable(file = file, system = system,
@@ -89,27 +86,10 @@ dPCP <- function(file, system = NULL, file.location = ".", deep = FALSE,
                                   minPts = minPts,
                                   save.template = save.template)
 
-  if (isTRUE(deep)) {
 
-    #Sample DBSCAN clustering
-    DBsamples <- sample_dbscan(sample.subquality = samples,
-                               sample.table = samTable,
-                               referenceDB = refSampleDB,
-                               file.location = file.location)
-
-    #Predict clusters centers position
-    centers <-  centers_deep(sample.dbscan = DBsamples,
-                             sample.table = samTable,
-                             referenceDB = refSampleDB)
-
-  } else {
-
-    #Predict clusters centers position
-    centers <- centers_data(sample.subquality = samples,
-                            sample.table = samTable,
-                            referenceDB = refSampleDB)
-
-  }
+  #Predict clusters centers position
+  centers <- centers_data(sample.subquality = samples, sample.table = samTable,
+                          referenceDB = refSampleDB)
 
 
   #Fuzzy c-means clustering
@@ -129,43 +109,23 @@ dPCP <- function(file, system = NULL, file.location = ".", deep = FALSE,
   results <- replicates_quant(raw.results = target.quant,
                               sample.table = samTable)
 
-  if (isTRUE(deep)) {
-    return.list <- list("referenceDB" = refSampleDB,
-                        "samples" = lapply(seq_along(samples), function(x) {
-                          list(
-                            "quality" = samples[[x]]$quality,
-                            "reference" = samTable$Reference[x],
-                            "centers" = centers[[x]]$centers,
-                            "data" = cbind.data.frame(
-                              samples[[x]]$data,
-                              "dbscan cluster" = DBsamples[[x]]$data$cluster,
-                              "cmeans cluster" = cmeansclus[[x]]$data$cluster,
-                              "final cluster" = clustering[[x]]$data$cluster),
-                            "cmeans membership" = cmeansclus[[x]]$membership,
-                            "raw results" = target.quant[[x]]$`raw results`)
-                        }),
-                        "results" = results
-    )
-    names(return.list$samples) <- names(samples)
+  return.list <- list("referenceDB" = refSampleDB,
+                      "samples" = lapply(seq_along(samples), function(x) {
+                        list(
+                          "quality" = samples[[x]]$quality,
+                          "reference" = samTable$Reference[x],
+                          "centers" = centers[[x]]$centers,
+                          "data" = cbind.data.frame(
+                            samples[[x]]$data,
+                            "cmeans cluster" = cmeansclus[[x]]$data$cluster,
+                            "final cluster" = clustering[[x]]$data$cluster),
+                          "cmeans membership" = cmeansclus[[x]]$membership,
+                          "raw results" = target.quant[[x]]$`raw results`)
+                      }),
+                      "results" = results
+  )
+  names(return.list$samples) <- names(samples)
 
-  } else {
-    return.list <- list("referenceDB" = refSampleDB,
-                        "samples" = lapply(seq_along(samples), function(x) {
-                          list(
-                            "quality" = samples[[x]]$quality,
-                            "reference" = samTable$Reference[x],
-                            "centers" = centers[[x]]$centers,
-                            "data" = cbind.data.frame(
-                              samples[[x]]$data,
-                              "cmeans cluster" = cmeansclus[[x]]$data$cluster,
-                              "final cluster" = clustering[[x]]$data$cluster),
-                            "cmeans membership" = cmeansclus[[x]]$membership,
-                            "raw results" = target.quant[[x]]$`raw results`)
-                        }),
-                        "results" = results
-    )
-    names(return.list$samples) <- names(samples)
-  }
   class(return.list) <- "dPCP"
 
   return(return.list)
@@ -177,41 +137,25 @@ dPCP <- function(file, system = NULL, file.location = ".", deep = FALSE,
 #' @param x an object of class \code{dPCP}
 #' @param ... Arguments to be passed to methods
 #' @param  sample 'all' to show all samples, or a numeric vector indicating
-#'   the row number of samples in the project table.
+#'   the row number of samples in the sample table.
 #' @param  reference 'all' to show all reference samples, or a character vector
 #'   with chip ID (Thermo Fisher) or the file name (Bio-rad) of reference
 #'   samples to be showed.
 #' @param type string. Type of plot to be showed. Available plots:
-#'   'reference dbscan', 'sample dbscan' (just for deep analysis), 'centers',
-#'   'cmeans', 'rain', 'dPCP'.
-#' @param  save.plot logical. If TRUE the plots are exported to a file.
-#' @param  format a string indicating the file format for the export.
-#'   Available formats: 'eps', 'ps', 'tex', 'pdf', 'jpeg', 'tiff', 'png',
-#'   'bmp', 'svg', 'wmf'.
-#' @param dpi numeric. Image resolution.
+#'   'reference dbscan', 'centers', 'cmeans', 'rain', 'dPCP'.
 #' @export
 
 plot.dPCP <- function(x, ..., sample = "all", reference = "all",
-                      type = "dPCP", save.plot = FALSE, format = "png",
-                      dpi = 300) {
+                      type = "dPCP") {
 
-  if (all(type != c("reference dbscan", "sample dbscan", "centers", "cmeans",
-                    "rain", "dPCP")))
+  if (all(type != c("reference dbscan", "centers", "cmeans", "rain", "dPCP")))
     stop("'type' must be one of following string:
-         'reference dbscan', 'sample dbscan', 'centers', 'cmeans', 'rain',
-         'dPCP'")
-
-  if (type == "sample dbscan" & ncol(x$samples[[1]]$data) < 5)
-    stop("The DBSCAN anaylsis of samples is available just with deep workflow")
+         'reference dbscan', 'centers', 'cmeans', 'rain', 'dPCP'")
 
   if (type == "reference dbscan") {
-    plot.reference_dbscan(x$referenceDB, reference = reference,
-                          save.plot = save.plot, format = format, dpi = dpi)
+    plot.reference_dbscan(x$referenceDB, reference = reference)
   } else {
     data <- x$samples
-    if (type == "sample dbscan") {
-      class(data) <- "sample_dbscan"
-    }
     if (type == "centers") {
       class(data) <- "centers_data"
     }
@@ -222,8 +166,7 @@ plot.dPCP <- function(x, ..., sample = "all", reference = "all",
       class(data) <- c("rain_reclus", "dPCP")
     }
 
-    graphics::plot(x = data, sample = sample, save.plot = save.plot,
-                   format = format, dpi = dpi)
+    graphics::plot(x = data, sample = sample)
   }
 }
 

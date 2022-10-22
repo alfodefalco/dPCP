@@ -51,7 +51,7 @@ of reference samples indicated in refID. The results are represented in
 scatterplots exported to a pdf file.
 }
 \examples{
-\dontrun{
+\donttest{
 library(dPCP)
 
 #Find path of sample table and location of reference and input files

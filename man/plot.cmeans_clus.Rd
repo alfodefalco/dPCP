@@ -7,7 +7,7 @@
 \usage{
 cmeans_clus(centers.data)
 
-\method{plot}{cmeans_clus}(x, ..., sample = "all", save.plot = FALSE, format = "png", dpi = 300)
+\method{plot}{cmeans_clus}(x, ..., sample = "all")
 }
 \arguments{
 \item{centers.data}{an object of class \code{centers_data}, inherited
@@ -18,15 +18,7 @@ from \code{\link{centers_data}}.}
 \item{...}{Arguments to be passed to methods}
 
 \item{sample}{'all' to show all samples, or a numeric vector indicating
-the row number of samples in the project table.}
-
-\item{save.plot}{logical. If TRUE the plots are exported to a file.}
-
-\item{format}{a string indicating the file format for the export.
-Available formats: 'eps', 'ps', 'tex', 'pdf', 'jpeg', 'tiff', 'png',
-'bmp', 'svg', 'wmf'.}
-
-\item{dpi}{numeric. Image resolution.}
+the row number of samples in the sample table.}
 }
 \value{
 An object of class \code{cmeans_clus} containing a sublist for
@@ -44,7 +36,7 @@ This function carries out the c-means cluster analysis, using the centroids
 position as initial values for cluster centers.
 }
 \examples{
-\dontrun{
+\donttest{
 library(dPCP)
 
 #Find path of sample table and location of reference and input files
@@ -74,6 +66,6 @@ cent <- centers_data(samp, sample.table,dbref)
 #Fuzzy c-means clustering
 cmclus <- cmeans_clus(cent)
 
-plot(cmclus, sample = "all", save.plot = FALSE)
+plot(cmclus, sample = "all")
 }
 }

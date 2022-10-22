@@ -13,7 +13,7 @@ reference_dbscan(
   save.template = FALSE
 )
 
-\method{plot}{reference_dbscan}(x, ..., reference = "all", save.plot = FALSE, format = "png", dpi = 300)
+\method{plot}{reference_dbscan}(x, ..., reference = "all")
 }
 \arguments{
 \item{reference.subquality}{an object of class \code{read_reference},
@@ -41,14 +41,6 @@ reference samples is saved. When \code{system} is Thermo Fisher,
 \item{reference}{'all' to show all reference samples, or a character vector
 with chip ID (Thermo Fisher) or the file name (Bio-rad) of reference
 samples to be showed.}
-
-\item{save.plot}{logical. If TRUE the plots are exported to a file.}
-
-\item{format}{a string indicating the file format for the export.
-Available formats: 'eps', 'ps', 'tex', 'pdf', 'jpeg', 'tiff', 'png',
-'bmp', 'svg', 'wmf'.}
-
-\item{dpi}{numeric. Image resolution.}
 }
 \value{
 An object of class \code{reference_dbscan} containing a sublist for
@@ -67,7 +59,7 @@ paramters (reference ID, eps, minPts) is available, data are retrived
 from the template file.
 }
 \examples{
-\dontrun{
+\donttest{
 library(dPCP)
 
 #Find path of sample table and location of reference and input files
@@ -91,6 +83,6 @@ samp <- read_sample(sample.table, system = "bio-rad",
 #Reference DBSCAN clustering
 dbref <- reference_dbscan(ref, sample.table, save.template = FALSE)
 
-plot(dbref, reference = "all", save.plot = FALSE)
+plot(dbref, reference = "all")
 }
 }
