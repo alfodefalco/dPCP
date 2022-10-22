@@ -131,7 +131,11 @@ plot.cmeans_clus <- function(x, ..., sample = "all") {
       cluster  <-  x[[y]]$data[, ncol(x[[y]]$data) - 1]
     }
 
-    cluscolors <- scales::hue_pal()(nrow(x[[y]]$centers))
+    cluscolors <- c(
+      "gray70", "#004949", "#ff6db6", "#009292", "#ffb6db", "#490092",
+      "#006ddb", "#b66dff", "#6db6ff", "#b6dbff", "#920000", "#924900",
+      "#db6d00", "#24ff24", "#ffff6d",
+      "#000000")[1:(nrow(x[[y]]$centers))]
     names(cluscolors) <- row.names(x[[y]]$centers)
 
     p <- ggplot(as.data.frame(x[[y]]$data),
@@ -313,7 +317,11 @@ plot.rain_reclus <- function(x, ..., sample = "all") {
       cluster  <-  x[[y]]$data[, ncol(x[[y]]$data)]
     }
 
-    cluscolors <- scales::hue_pal()(nrow(x[[y]]$centers))
+    cluscolors <- c(
+      "gray70", "#004949", "#ff6db6", "#009292", "#ffb6db", "#490092",
+      "#006ddb", "#b66dff", "#6db6ff", "#b6dbff", "#920000", "#924900",
+      "#db6d00", "#24ff24", "#ffff6d",
+      "#000000")[1:nrow(x[[y]]$centers)]
     names(cluscolors) <- row.names(x[[y]]$centers)
 
     p <- ggplot(as.data.frame(x[[y]]$data),
@@ -403,8 +411,13 @@ manual_correction <- function(data, filename, save.plot = FALSE,
 
   if (!is.numeric(dpi) || length(dpi) != 1) stop("dpi must be a numeric value")
 
-  if (is.character(data$samples[[1]]$quality)) {
+  if ((is.character(data$samples[[1]]$quality)) &
+      (data$samples[[1]]$quality == "Defined by Bio-Rad")) {
     partition.volume <- 0.00085
+  } else if ((is.character(data$samples[[1]]$quality)) &
+             (data$samples[[1]]$quality != "Defined by Bio-Rad")) {
+    partition.volume <- as.numeric(
+      str_split(data$samples[[1]]$quality, ": ")[[1]][2])
   } else {
     partition.volume <- 0.000755
   }
@@ -530,10 +543,15 @@ manual_correction <- function(data, filename, save.plot = FALSE,
       #Create an action button for each predited cluster
       lapply(seq(nrow(centers.data())), function(x) {
 
-        buttons.colors <- scales::hue_pal()(nrow(centers.data()))
+        buttons.colors <- c(
+          "gray70", "#004949", "#ff6db6", "#009292", "#ffb6db", "#490092",
+          "#006ddb", "#b66dff", "#6db6ff", "#b6dbff", "#920000", "#924900",
+          "#db6d00", "#24ff24", "#ffff6d",
+          "#000000")[1:nrow(centers.data())]
+
         background.color <- paste0(
           "background-color:", buttons.colors[x], "; border-color: black", ";
-          font-weight: bold")
+          font-weight: bold", "; color: grey")
 
 
         in.clus$buttons[[x]] <- actionButton(
@@ -566,7 +584,11 @@ manual_correction <- function(data, filename, save.plot = FALSE,
 
     output$finalplot <- renderPlot( {
 
-      cluscolors <- scales::hue_pal()(nrow(centers.data()))
+      cluscolors <- c(
+        "gray70", "#004949", "#ff6db6", "#009292", "#ffb6db", "#490092",
+        "#006ddb", "#b66dff", "#6db6ff", "#b6dbff", "#920000", "#924900",
+        "#db6d00", "#24ff24", "#ffff6d",
+        "#000000")[1:nrow(centers.data())]
       names(cluscolors) <- rownames(centers.data())
       ggplot(dataplot(), aes_string(x = "Vic", y = "Fam")) +
 
@@ -914,7 +936,11 @@ manual_correction <- function(data, filename, save.plot = FALSE,
 
           text.p <- ggpubr::ggparagraph(text = tx, color = "black", size = 12)
 
-          cluscolors <- scales::hue_pal()(nrow(data$samples[[x]]$centers))
+          cluscolors <- c(
+            "gray70", "#004949", "#ff6db6", "#009292", "#ffb6db", "#490092",
+            "#006ddb", "#b66dff", "#6db6ff", "#b6dbff", "#920000", "#924900",
+            "#db6d00", "#24ff24", "#ffff6d",
+            "#000000")[1:nrow(data$samples[[x]]$centers)]
           names(cluscolors) <- rownames(data$samples[[x]]$centers)
 
           graph.p <- ggplot(manual.mod$clus[[x]], aes_string(x = "Vic",

@@ -30,7 +30,6 @@ Imports:
     graphics,
     raster,
     rlist,
-    scales,
     shiny,
     shinyjs,
     stats,

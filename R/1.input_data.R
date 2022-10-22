@@ -53,7 +53,11 @@ dbscan_combination <- function(refID, system = NULL, file.location = ".",
     system <- "Bio-Rad"
     reference.quality <- "Defined by Bio-Rad"
 
-  } else {stop("system must be either Thermo Fisher or Bio-Rad")}
+  } else if (any(c("Other", "other", "O", "o") == system)) {
+    system <- "Other"
+    reference.quality <- "Defined by the supplier"
+
+  } else {stop("system must be either Thermo Fisher, Bio-Rad, or other")}
 
   if ((system == "Thermo Fisher") & (
     !is.numeric(reference.quality) || any(reference.quality > 1) ||
@@ -146,6 +150,11 @@ dbscan_combination <- function(refID, system = NULL, file.location = ".",
       p <- ggplot(as.data.frame(submatrix), aes_string(x = "Vic", y = "Fam")) +
 
         geom_point(size = 0.5, aes(color = factor(dbclus$cluster))) +
+        scale_color_manual(values = c(
+          "gray70", "#004949", "#ff6db6", "#009292", "#ffb6db", "#490092",
+          "#006ddb", "#b66dff", "#6db6ff", "#b6dbff", "#920000", "#924900",
+          "#db6d00", "#24ff24", "#ffff6d",
+          "#000000")) +
 
         geom_point(size = 0.5,
                    data = as.data.frame(submatrix)[dbclus$cluster == 0, ],
@@ -216,7 +225,11 @@ read_sampleTable <- function(file, system = NULL, file.location = ".") {
                    "biorad", "Bio", "bio", "B", "b") == system)) {
     system <- "Bio-Rad"
 
-  } else {stop("system must be either Thermo Fisher or Bio-Rad")}
+  } else if (any(c("Other", "other", "O", "o") == system)) {
+    system <- "Other"
+    reference.quality <- "Defined by the supplier"
+
+  } else {stop("system must be either Thermo Fisher, Bio-Rad, or other")}
 
   if (!is.character(file.location))
     stop("'file.location' must be a path name indicating reference and
@@ -366,7 +379,11 @@ read_reference <- function(sample.table, system = NULL, file.location = ".",
     system <- "Bio-Rad"
     reference.quality <- "Defined by Bio-Rad"
 
-  } else {stop("system must be either Thermo Fisher or Bio-Rad")}
+  } else if (any(c("Other", "other", "O", "o") == system)) {
+    system <- "Other"
+    reference.quality <- "Defined by the supplier"
+
+  } else {stop("system must be either Thermo Fisher, Bio-Rad, or other")}
 
 
   if ((system == "Thermo Fisher") & (
@@ -599,7 +616,7 @@ read_reference <- function(sample.table, system = NULL, file.location = ".",
 #' @export
 
 read_sample <- function(sample.table, system = NULL, file.location = ".",
-                        sample.quality = 0.5) {
+                        sample.quality = 0.5, partition.volume = NULL) {
 
   if (class(sample.table) != "sample_table")
     stop("'sample.table' must be an object of class sample_table")
@@ -617,7 +634,17 @@ read_sample <- function(sample.table, system = NULL, file.location = ".",
     system <- "Bio-Rad"
     sample.quality <- "Defined by Bio-Rad"
 
-  } else {stop("system must be either Thermo Fisher or Bio-Rad")}
+  } else if (any(c("Other", "other", "O", "o") == system)) {
+
+    if (is.numeric(partition.volume)) {
+      system <- "Other"
+      sample.quality <- paste0(
+        "Defined by the supplier. Partition volume: ", partition.volume)
+    } else {
+      stop("partition.volume must be numeric")
+    }
+
+  } else {stop("system must be either Thermo Fisher, Bio-Rad, or other")}
 
 
   if ((system == "Thermo Fisher") & (

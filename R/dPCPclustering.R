@@ -37,6 +37,9 @@
 #' @param QC.reference logical. If TRUE the fraction of rain elements in the
 #'   reference samples is carried out. Warning messages are displayed when the
 #'   percentage of rain elements is between 1% and 5% or higher than 5%.
+#' @param partition.volume numeric. This parameters is taken into account when
+#'   the parameter 'system' is set on Other. Indicate the partion volume in
+#'   microliters spcific to the digital PCR system.
 #' @rdname plot.dPCP
 #' @return An object of class \code{dPCP} containing the following components:
 #'   \item{referenceDB}{an object of class \code{reference_dbscan}.}
@@ -63,9 +66,9 @@
 #' @export
 
 dPCP <- function(file, system = NULL, file.location = ".",
-                     reference.quality = 0.5, sample.quality = 0.5,
-                     eps = 200, minPts = 50, save.template = FALSE,
-                     rain = TRUE, QC.reference = FALSE) {
+                 reference.quality = 0.5, sample.quality = 0.5,
+                 eps = 200, minPts = 50, save.template = FALSE,
+                 rain = TRUE, QC.reference = FALSE, partition.volume = NULL) {
 
   if (!is.logical(rain)) stop("rain must be logical")
   if (!is.logical(QC.reference)) stop("QC.reference must be logical")
@@ -83,7 +86,8 @@ dPCP <- function(file, system = NULL, file.location = ".",
   #Read samples
   samples <- read_sample(sample.table = samTable, system = system,
                          file.location = file.location,
-                         sample.quality = sample.quality)
+                         sample.quality = sample.quality,
+                         partition.volume = partition.volume)
 
   #Reference DBSCAN clustering
   refSampleDB <- reference_dbscan(reference.subquality = refSample,
@@ -251,8 +255,9 @@ plot.dPCP <- function(x, ..., sample = "all", reference = "all",
 
         labs(title = names(x$samples)[y]) +
 
-        scale_color_gradient2(midpoint = 0, low = "red", mid = "orange",
-                              high = "green", limits = c(-1,1)) +
+        scale_color_gradient2(midpoint = 0, low = "#000004FF",
+                              mid = "#B63679FF", high = "#FDE4A6FF",
+                              limits = c(-1,1)) +
 
         theme(
           panel.background = element_rect(fill = "white"),

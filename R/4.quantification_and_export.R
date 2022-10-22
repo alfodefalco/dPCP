@@ -128,8 +128,13 @@ target_quant <- function(data.cluster, sample.table) {
     #Calculate the results  assuming a Poisson distribution for the number of
     #copies in each partition.
 
-    if (is.character(data.cluster[[x]]$quality)) {
+    if ((is.character(data.cluster[[x]]$quality)) &
+        (data.cluster[[x]]$quality == "Defined by Bio-Rad")) {
       partition.volume <- 0.00085
+    } else if ((is.character(data.cluster[[x]]$quality)) &
+               (data.cluster[[x]]$quality != "Defined by Bio-Rad")) {
+      partition.volume <- as.numeric(
+        str_split(data.cluster[[x]]$quality, ": ")[[1]][2])
     } else {
       partition.volume <- 0.000755
     }
@@ -497,7 +502,11 @@ report_dPCP <- function(data, filename, sample = "all") {
     text.p <- ggpubr::ggparagraph(text = tx, color = "black", size = 12)
 
 
-    cluscolors <- scales::hue_pal()(nrow(data$sample[[x]]$centers))
+    cluscolors <- c(
+      "gray70", "#004949", "#ff6db6", "#009292", "#ffb6db", "#490092",
+      "#006ddb", "#b66dff", "#6db6ff", "#b6dbff", "#920000", "#924900",
+      "#db6d00", "#24ff24", "#ffff6d",
+      "#000000")[1:nrow(data$sample[[x]]$centers)]
     names(cluscolors) <- row.names(data$sample[[x]]$centers)
 
     graph.p <- ggplot(as.data.frame(data$sample[[x]]$data),
