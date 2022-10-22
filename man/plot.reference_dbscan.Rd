@@ -22,11 +22,7 @@ inherited from \code{\link{read_reference}}.}
 \item{sample.table}{object of class \code{sample_table}, inherited from
 \code{\link{read_sampleTable}}.}
 
-\item{eps}{numeric. Input parameters for the DBSCAN algorithm. If
-they match the paramters of \code{\link{reference_dbscan}} template file,
-the data are retrived from the template.}
-
-\item{minPts}{numeric. Input parameters for the DBSCAN algorithm. If
+\item{eps, minPts}{numeric. Input parameters for the DBSCAN algorithm. If
 they match the paramters of \code{\link{reference_dbscan}} template file,
 the data are retrived from the template.}
 

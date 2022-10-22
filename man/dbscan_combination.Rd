@@ -63,5 +63,7 @@ fileLoc <- system.file("extdata", package = "dPCP")
 dbscan_combination("dilution20200313_B01_Amplitude.csv",
                    file.location = fileLoc, system = "bio-rad",
                    eps = c(150, 160, 180, 190), minPts = c(80, 100, 120))
+
+unlink("dilution20200313_B01_Amplitude.pdf")
 }
 }

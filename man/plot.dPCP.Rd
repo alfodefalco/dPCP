@@ -14,7 +14,9 @@ dPCP(
   eps = 200,
   minPts = 50,
   save.template = FALSE,
-  rain = TRUE
+  rain = TRUE,
+  QC.reference = FALSE,
+  partition.volume = NULL
 )
 
 \method{plot}{dPCP}(x, ..., sample = "all", reference = "all", type = "dPCP")
@@ -62,6 +64,14 @@ reference samples is saved. When \code{system} is Thermo Fisher,
 
 \item{rain}{logical. If TRUE the rain analysis is carried out.}
 
+\item{QC.reference}{logical. If TRUE the fraction of rain elements in the
+reference samples is carried out. Warning messages are displayed when the
+percentage of rain is high.}
+
+\item{partition.volume}{numeric. This parameters is taken into account when
+the parameter 'system' is set on Other. Indicate the partion volume in
+microliters spcific to the digital PCR system.}
+
 \item{x}{an object of class \code{dPCP}}
 
 \item{...}{Arguments to be passed to methods}
@@ -98,7 +108,8 @@ fileLoc <- system.file("extdata", package = "dPCP")
 
 #dPCP analysis
 results <- dPCP(sampleTable, system = "bio-rad", file.location = fileLoc,
-                eps = 200, minPts = 50, save.template = FALSE, rain = TRUE)
+                eps = 200, minPts = 50, save.template = FALSE, rain = TRUE,
+                QC.reference = FALSE)
 
 plot(results, sample = 1, type = "dPCP")
 }

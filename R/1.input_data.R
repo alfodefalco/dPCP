@@ -33,6 +33,8 @@
 #' dbscan_combination("dilution20200313_B01_Amplitude.csv",
 #'                    file.location = fileLoc, system = "bio-rad",
 #'                    eps = c(150, 160, 180, 190), minPts = c(80, 100, 120))
+#'
+#' unlink("dilution20200313_B01_Amplitude.pdf")
 #' }
 #' @export
 
@@ -366,7 +368,7 @@ read_reference <- function(sample.table, system = NULL, file.location = ".",
                            reference.quality = 0.5, eps = NULL,
                            minPts = NULL) {
 
-  if (class(sample.table) != "sample_table")
+  if (!inherits(sample.table, "sample_table"))
     stop("'sample.table' must be an object of class sample_table")
 
 
@@ -618,7 +620,7 @@ read_reference <- function(sample.table, system = NULL, file.location = ".",
 read_sample <- function(sample.table, system = NULL, file.location = ".",
                         sample.quality = 0.5, partition.volume = NULL) {
 
-  if (class(sample.table) != "sample_table")
+  if (!inherits(sample.table, "sample_table"))
     stop("'sample.table' must be an object of class sample_table")
 
   if (!is.character(file.location))

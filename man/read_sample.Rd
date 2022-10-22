@@ -8,7 +8,8 @@ read_sample(
   sample.table,
   system = NULL,
   file.location = ".",
-  sample.quality = 0.5
+  sample.quality = 0.5,
+  partition.volume = NULL
 )
 }
 \arguments{
@@ -28,6 +29,10 @@ files location. The default corresponds to the working directory,
 data. If different thresholds have to be applied to various samples, a
 vectror of the same length of number of samples has to be provided. Used
 only when the \code{system} is Thermo Fisher.}
+
+\item{partition.volume}{numeric. This parameters is taken into account when
+the parameter 'system' is set on Other. Indicate the partion volume in
+microliters spcific to the digital PCR system.}
 }
 \value{
 An object of class \code{read_sample} containing a sublist for each

@@ -51,7 +51,7 @@
 
 cmeans_clus <- function(centers.data) {
 
-  if (class(centers.data) != "centers_data")
+  if (!inherits(centers.data, "centers_data"))
     stop("centers.data must be an object of class centers_data")
 
   cClus <- lapply(centers.data, function(x) {
@@ -227,7 +227,7 @@ plot.cmeans_clus <- function(x, ..., sample = "all") {
 
 rain_reclus <- function(cmeans.cluster) {
 
-  if (class(cmeans.cluster) != "cmeans_clus")
+  if (!inherits(cmeans.cluster, "cmeans_clus"))
     stop("cmeans.cluster must be an object of class cmeans_clus")
 
   rainclus <- lapply(cmeans.cluster, function(x) {
@@ -417,7 +417,7 @@ manual_correction <- function(data, filename, save.plot = FALSE,
   } else if ((is.character(data$samples[[1]]$quality)) &
              (data$samples[[1]]$quality != "Defined by Bio-Rad")) {
     partition.volume <- as.numeric(
-      str_split(data$samples[[1]]$quality, ": ")[[1]][2])
+      stringr::str_split(data$samples[[1]]$quality, ": ")[[1]][2])
   } else {
     partition.volume <- 0.000755
   }

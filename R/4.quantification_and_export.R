@@ -55,7 +55,7 @@ target_quant <- function(data.cluster, sample.table) {
   if (all(class(data.cluster) != c("rain_reclus", "cmeans_clus")))
     stop("data.cluster must be an object of class rain_reclus or cmeans_clus")
 
-  if (class(sample.table) != "sample_table")
+  if (!inherits(sample.table,"sample_table"))
     stop("'sample.table' must be an object of class sample_table")
 
   targetQuant <- lapply(seq_along(data.cluster), function(x) {
@@ -134,7 +134,7 @@ target_quant <- function(data.cluster, sample.table) {
     } else if ((is.character(data.cluster[[x]]$quality)) &
                (data.cluster[[x]]$quality != "Defined by Bio-Rad")) {
       partition.volume <- as.numeric(
-        str_split(data.cluster[[x]]$quality, ": ")[[1]][2])
+        stringr::str_split(data.cluster[[x]]$quality, ": ")[[1]][2])
     } else {
       partition.volume <- 0.000755
     }
@@ -277,10 +277,10 @@ target_quant <- function(data.cluster, sample.table) {
 
 replicates_quant <- function(raw.results, sample.table) {
 
-  if (class(raw.results) != c("target_quant"))
+  if (!inherits(raw.results, "target_quant"))
     stop("raw.results must be an object of class target_quant")
 
-  if (class(sample.table) != "sample_table")
+  if (!inherits(sample.table, "sample_table"))
     stop("'sample.table' must be an object of class sample_table")
 
   if (is.character(raw.results[[1]]$quality)) {

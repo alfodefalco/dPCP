@@ -49,10 +49,10 @@
 reference_dbscan <- function(reference.subquality, sample.table, eps = 200,
                              minPts = 50, save.template = FALSE) {
 
-  if (class(reference.subquality) != "read_reference")
+  if (!inherits(reference.subquality, "read_reference"))
     stop("reference.subquality must be an object of class read_reference")
 
-  if (class(sample.table) != "sample_table")
+  if (!inherits(sample.table, "sample_table"))
     stop("'sample.table' must be an object of class sample_table")
 
   if (!is.numeric(c(eps, minPts))) stop("eps and minPts must be numeric")
@@ -299,15 +299,15 @@ plot.reference_dbscan <- function(x, ..., reference = "all") {
 
 centers_data <- function(sample.subquality, sample.table, referenceDB) {
 
-  if (class(sample.subquality) != "read_sample")
+  if (!inherits(sample.subquality, "read_sample"))
     stop("sample.subquality must be an object of class read_sample")
 
-  if (class(sample.table) != "sample_table")
+  if (!inherits(sample.table, "sample_table"))
     stop("'sample.table' must be an object of class sample_table")
 
   class(sample.table) <- "data.frame"
 
-  if (class(referenceDB) != "reference_dbscan")
+  if (!inherits(referenceDB, "reference_dbscan"))
     stop("referenceDB must be an object of class reference_dbscan")
 
   centersCoor <- lapply(seq_along(sample.subquality), function(x) {

@@ -112,8 +112,9 @@ dPCP <- function(file, system = NULL, file.location = ".",
 
   sil_coef <- lapply(seq_along(samples), function(x) {
 
-    coef_all <- silhouette(as.numeric(unclass(clustering[[x]]$data$cluster)),
-                           dist(clustering[[x]]$data[,c(1,2)]))
+    coef_all <- cluster::silhouette(
+      as.numeric(unclass(clustering[[x]]$data$cluster)),
+      stats::dist(clustering[[x]]$data[,c(1,2)]))
   })
 
   #QC reference
@@ -231,7 +232,7 @@ plot.dPCP <- function(x, ..., sample = "all", reference = "all",
       stop("sample must be `all` or a numeric vector indicating the row number
          of samples in sample.table")
 
-    if (class(x) != "dPCP")
+    if (!inherits(x, "dPCP"))
       stop("The plot of silhoutte coefficients can be generated only when x is
            an object of class 'dPCP'")
 
@@ -248,8 +249,9 @@ plot.dPCP <- function(x, ..., sample = "all", reference = "all",
         "Silhouette coefficient" = x$samples[[y]]$`silhouette coefficient`
       )
 
-      p_sil <- ggplot(silh_data, aes(x = Vic, y = Fam,
-                                     color = `Silhouette coefficient`)) +
+      p_sil <- ggplot(silh_data, aes(
+        x = silh_data$Vic, y = silh_data$Fam,
+        color = silh_data$`Silhouette coefficient`)) +
 
         geom_point(size = 1) +
 
