@@ -34,6 +34,9 @@
 #'   reference samples is saved. When \code{system} is Thermo Fisher,
 #'   \code{save.template} can be also a character vector indicating the chipID.
 #' @param rain logical. If TRUE the rain analysis is carried out.
+#' @param QC.reference logical. If TRUE the fraction of rain elements in the
+#'   reference samples is carried out. Warning messages are displayed when the
+#'   percentage of rain elements is between 1% and 5% or higher than 5%.
 #' @rdname plot.dPCP
 #' @return An object of class \code{dPCP} containing the following components:
 #'   \item{referenceDB}{an object of class \code{reference_dbscan}.}
@@ -52,18 +55,20 @@
 #'
 #' #dPCP analysis
 #' results <- dPCP(sampleTable, system = "bio-rad", file.location = fileLoc,
-#'                 eps = 200, minPts = 50, save.template = FALSE, rain = TRUE)
+#'                 eps = 200, minPts = 50, save.template = FALSE, rain = TRUE,
+#'                 QC.reference = FALSE)
 #'
 #' plot(results, sample = 1, type = "dPCP")
 #' }
 #' @export
 
 dPCP <- function(file, system = NULL, file.location = ".",
-                 reference.quality = 0.5, sample.quality = 0.5,
-                 eps = 200, minPts = 50, save.template = FALSE,
-                 rain = TRUE) {
+                     reference.quality = 0.5, sample.quality = 0.5,
+                     eps = 200, minPts = 50, save.template = FALSE,
+                     rain = TRUE, QC.reference = FALSE) {
 
   if (!is.logical(rain)) stop("rain must be logical")
+  if (!is.logical(QC.reference)) stop("QC.reference must be logical")
 
   #Read samples table
   samTable <- read_sampleTable(file = file, system = system,
@@ -101,6 +106,56 @@ dPCP <- function(file, system = NULL, file.location = ".",
     clustering <- cmeansclus
   }
 
+  sil_coef <- lapply(seq_along(samples), function(x) {
+
+    coef_all <- silhouette(as.numeric(unclass(clustering[[x]]$data$cluster)),
+                           dist(clustering[[x]]$data[,c(1,2)]))
+  })
+
+  #QC reference
+  if (isTRUE(QC.reference) & any(!is.na(samTable$Reference))) {
+
+    samTable_tab <- do.call(cbind.data.frame, samTable)
+
+    samTable_ref <- samTable_tab[match(unique(samTable$Reference),
+                                       samTable$Reference),]
+
+    class(samTable_ref) <- class(samTable)
+
+    refSampleDB_new <- refSampleDB
+    class(refSampleDB_new) <- class(samples)
+
+    centers_new <- centers_data(sample.subquality = refSampleDB_new,
+                                sample.table = samTable_ref,
+                                referenceDB = refSampleDB)
+
+    cmeansclus_new <- cmeans_clus(centers.data = centers_new)
+
+    rain_ref <- lapply(cmeansclus_new, function(x) {
+
+      max.mem <- apply(x$membership, 1, max)
+
+      rain <- sum(max.mem < 0.8, na.rm = T) / length(max.mem)
+
+      if (rain > 0.01 & rain <= 0.05) {
+        print(
+          paste0(
+            "Between 1% and 5% of data elements in the reference '",
+            x$reference, "' were classified as rain. ",
+            "Please check whether the DBSCAN analysis was affected by rain.")
+        )
+      } else if (rain > 0.05) {
+        print(
+          paste0(
+            "More than 5% of data elements in the reference '",
+            x$reference, "' were classified as rain. ",
+            "The DBSCAN analysis could have been affected by rain. ",
+            "It may be helpful to use another reference")
+        )
+      }
+    })
+  }
+
   #Quantification
   target.quant <- target_quant(data.cluster = clustering,
                                sample.table = samTable)
@@ -118,9 +173,18 @@ dPCP <- function(file, system = NULL, file.location = ".",
                           "data" = cbind.data.frame(
                             samples[[x]]$data,
                             "cmeans cluster" = cmeansclus[[x]]$data$cluster,
-                            "final cluster" = clustering[[x]]$data$cluster),
+                            "final cluster" = clustering[[x]]$data$cluster
+                          ),
                           "cmeans membership" = cmeansclus[[x]]$membership,
-                          "raw results" = target.quant[[x]]$`raw results`)
+                          "raw results" = target.quant[[x]]$`raw results`,
+                          "silhouette coefficient" =
+                            if (any(is.na(sil_coef[[x]]))){
+                              rep("NA", nrow(samples[[x]]$data))
+                            } else {sil_coef[[x]][,3]},
+                          "overall silhouette coefficient" =
+                            if (any(is.na(sil_coef[[x]]))){
+                              "NA"} else {mean(sil_coef[[x]][,3])}
+                        )
                       }),
                       "results" = results
   )
@@ -148,25 +212,72 @@ dPCP <- function(file, system = NULL, file.location = ".",
 plot.dPCP <- function(x, ..., sample = "all", reference = "all",
                       type = "dPCP") {
 
-  if (all(type != c("reference dbscan", "centers", "cmeans", "rain", "dPCP")))
+  if (all(type != c("reference dbscan", "centers", "cmeans", "rain", "dPCP",
+                    "silhouette")))
     stop("'type' must be one of following string:
-         'reference dbscan', 'centers', 'cmeans', 'rain', 'dPCP'")
+         'reference dbscan', 'centers', 'cmeans', 'rain', 'dPCP',
+         'silhouette'")
 
   if (type == "reference dbscan") {
     plot.reference_dbscan(x$referenceDB, reference = reference)
-  } else {
-    data <- x$samples
-    if (type == "centers") {
-      class(data) <- "centers_data"
-    }
-    if (type == "cmeans") {
-      class(data) <- c("cmeans_clus", "dPCP")
-    }
-    if (any(type == c("rain", "dPCP"))) {
-      class(data) <- c("rain_reclus", "dPCP")
+  }
+  else if (type == "silhouette") {
+
+    if (all(sample != "all") & any(sample > length(x$samples)))
+      stop("sample must be `all` or a numeric vector indicating the row number
+         of samples in sample.table")
+
+    if (class(x) != "dPCP")
+      stop("The plot of silhoutte coefficients can be generated only when x is
+           an object of class 'dPCP'")
+
+    if (all(sample == "all")) {
+      plotsample <- 1:length(x$samples)
+    } else {
+      plotsample <- sort(sample)
     }
 
-    graphics::plot(x = data, sample = sample)
-  }
+    silhsplot <- lapply(plotsample, function(y) {
+
+      silh_data <- cbind.data.frame(
+        "Vic" = x$samples[[y]]$data[, 1], "Fam" = x$samples[[y]]$data[, 2],
+        "Silhouette coefficient" = x$samples[[y]]$`silhouette coefficient`
+      )
+
+      p_sil <- ggplot(silh_data, aes(x = Vic, y = Fam,
+                                     color = `Silhouette coefficient`)) +
+
+        geom_point(size = 1) +
+
+        labs(title = names(x$samples)[y]) +
+
+        scale_color_gradient2(midpoint = 0, low = "red", mid = "orange",
+                              high = "green", limits = c(-1,1)) +
+
+        theme(
+          panel.background = element_rect(fill = "white"),
+          panel.border = element_rect(fill = NA, color = "black"),
+          plot.title = element_text(size = 14),
+          axis.title.x = element_text(size = 12),
+          axis.title.y = element_text(size = 12),
+          axis.text = element_text(size = 9),
+          legend.position = "right",
+          legend.title = element_text(size = 12)
+        )
+      plot(p_sil)
+    })} else {
+      data <- x$samples
+      if (type == "centers") {
+        class(data) <- "centers_data"
+      }
+      if (type == "cmeans") {
+        class(data) <- c("cmeans_clus", "dPCP")
+      }
+      if (any(type == c("rain", "dPCP"))) {
+        class(data) <- c("rain_reclus", "dPCP")
+      }
+
+      graphics::plot(x = data, sample = sample)
+    }
 }
 
