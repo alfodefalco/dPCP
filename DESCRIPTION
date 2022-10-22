@@ -42,3 +42,5 @@ Suggests:
     rmarkdown,
     testthat
 VignetteBuilder: knitr
+URL: https://github.com/alfodefalco/dPCP
+BugReports: https://github.com/alfodefalco/dPCP/issues
