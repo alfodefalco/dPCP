@@ -36,7 +36,7 @@
 #' @param rain logical. If TRUE the rain analysis is carried out.
 #' @param QC.reference logical. If TRUE the fraction of rain elements in the
 #'   reference samples is carried out. Warning messages are displayed when the
-#'   percentage of rain elements is between 1% and 5% or higher than 5%.
+#'   percentage of rain is high.
 #' @param partition.volume numeric. This parameters is taken into account when
 #'   the parameter 'system' is set on Other. Indicate the partion volume in
 #'   microliters spcific to the digital PCR system.
