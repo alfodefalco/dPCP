@@ -7,7 +7,7 @@
 \usage{
 cmeans_clus(centers.data)
 
-\method{plot}{cmeans_clus}(x, ..., sample = "all")
+\method{plot}{cmeans_clus}(x, ..., sample = "all", color.blind = FALSE)
 }
 \arguments{
 \item{centers.data}{an object of class \code{centers_data}, inherited
@@ -19,6 +19,9 @@ from \code{\link{centers_data}}.}
 
 \item{sample}{'all' to show all samples, or a numeric vector indicating
 the row number of samples in the sample table.}
+
+\item{color.blind}{logical. If TRUE colors optimized for colorblind readers
+are used.}
 }
 \value{
 An object of class \code{cmeans_clus} containing a sublist for

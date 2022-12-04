@@ -7,7 +7,7 @@
 \usage{
 rain_reclus(cmeans.cluster)
 
-\method{plot}{rain_reclus}(x, ..., sample = "all")
+\method{plot}{rain_reclus}(x, ..., sample = "all", color.blind = FALSE)
 }
 \arguments{
 \item{cmeans.cluster}{an object of class \code{cmeans_clus}, inherited
@@ -19,6 +19,9 @@ from \code{\link{cmeans_clus}}.}
 
 \item{sample}{'all' to show all samples, or a numeric vector indicating
 the row number of samples in the sample table.}
+
+\item{color.blind}{logical. If TRUE colors optimized for colorblind readers
+are used.}
 }
 \value{
 An object of class \code{rain_reclus} containing a sublist for

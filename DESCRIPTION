@@ -1,6 +1,6 @@
 Package: dPCP
 Title: Automated Analysis of Multiplex Digital PCR Data
-Version: 1.0.5
+Version: 2.0.0
 Authors@R: c(person(given = "Alfonso", family = "De Falco",
                     role = c("aut", "cre"), 
                     email = "alfonsodefalco90@gmail.com",
@@ -31,6 +31,7 @@ Imports:
     graphics,
     raster,
     rlist,
+    scales,
     shiny,
     shinyjs,
     stats,

@@ -4,7 +4,7 @@
 \alias{report_dPCP}
 \title{Export dPCP analysis results to a pdf report}
 \usage{
-report_dPCP(data, filename, sample = "all")
+report_dPCP(data, filename, sample = "all", color.blind = FALSE)
 }
 \arguments{
 \item{data}{an object of class \code{dPCP}, inherited from
@@ -15,6 +15,9 @@ create on disk.}
 
 \item{sample}{'all' to show all samples, or a numeric vector indicating
 the row number of samples in the sample table.}
+
+\item{color.blind}{logical. If TRUE colors optimized for colorblind
+readers are used.}
 }
 \value{
 A pdf file with the information and results of the dPCP analysis.

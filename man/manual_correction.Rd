@@ -4,7 +4,14 @@
 \alias{manual_correction}
 \title{Manual correction of dPCP cluster analysis}
 \usage{
-manual_correction(data, filename, save.plot = FALSE, format = "png", dpi = 300)
+manual_correction(
+  data,
+  filename,
+  save.plot = FALSE,
+  format = "png",
+  dpi = 300,
+  color.blind = FALSE
+)
 }
 \arguments{
 \item{data}{an object of class \code{dPCP}, inherited from
@@ -20,6 +27,9 @@ Available formats: 'eps', 'ps', 'tex', 'pdf', 'jpeg', 'tiff', 'png',
 'bmp', 'svg', 'wmf'.}
 
 \item{dpi}{numeric. Image resolution.}
+
+\item{color.blind}{logical. If TRUE colors optimized for colorblind
+readers are used.}
 }
 \value{
 A Shiny session.

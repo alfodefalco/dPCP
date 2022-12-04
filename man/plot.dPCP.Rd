@@ -19,7 +19,14 @@ dPCP(
   partition.volume = NULL
 )
 
-\method{plot}{dPCP}(x, ..., sample = "all", reference = "all", type = "dPCP")
+\method{plot}{dPCP}(
+  x,
+  ...,
+  sample = "all",
+  reference = "all",
+  type = "dPCP",
+  color.blind = FALSE
+)
 }
 \arguments{
 \item{file}{character. The name or the path of csv file to be read. If it
@@ -84,7 +91,12 @@ with chip ID (Thermo Fisher) or the file name (Bio-rad) of reference
 samples to be showed.}
 
 \item{type}{string. Type of plot to be showed. Available plots:
-'reference dbscan', 'centers', 'cmeans', 'rain', 'dPCP'.}
+'reference dbscan', 'centers', 'cmeans', 'rain', 'dPCP'.
+@param color.blind logical. If TRUE colors optimized for colorblind
+readers are used.}
+
+\item{color.blind}{logical. If TRUE colors optimized for colorblind readers
+are used.}
 }
 \value{
 An object of class \code{dPCP} containing the following components:
