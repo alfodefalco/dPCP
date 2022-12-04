@@ -411,15 +411,13 @@ manual_correction <- function(data, filename, save.plot = FALSE,
 
   if (!is.numeric(dpi) || length(dpi) != 1) stop("dpi must be a numeric value")
 
-  if ((is.character(data$samples[[1]]$quality)) &
-      (data$samples[[1]]$quality == "Defined by Bio-Rad")) {
+  if (data$samples[[1]]$quality == "Defined by Bio-Rad") {
     partition.volume <- 0.00085
-  } else if ((is.character(data$samples[[1]]$quality)) &
-             (data$samples[[1]]$quality != "Defined by Bio-Rad")) {
+  } else if (is.numeric(data$samples[[1]]$quality)) {
+    partition.volume <- 0.000755
+  } else {
     partition.volume <- as.numeric(
       stringr::str_split(data$samples[[1]]$quality, ": ")[[1]][2])
-  } else {
-    partition.volume <- 0.000755
   }
 
   clus.char <- lapply(data$samples, function(x) {

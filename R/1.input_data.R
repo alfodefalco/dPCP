@@ -638,7 +638,7 @@ read_sample <- function(sample.table, system = NULL, file.location = ".",
 
   } else if (any(c("Other", "other", "O", "o") == system)) {
 
-    if (is.numeric(partition.volume)) {
+    if (is.numeric(partition.volume) & length(partition.volume) == 1) {
       system <- "Other"
       sample.quality <- paste0(
         "Defined by the supplier. Partition volume: ", partition.volume)

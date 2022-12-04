@@ -128,15 +128,13 @@ target_quant <- function(data.cluster, sample.table) {
     #Calculate the results  assuming a Poisson distribution for the number of
     #copies in each partition.
 
-    if ((is.character(data.cluster[[x]]$quality)) &
-        (data.cluster[[x]]$quality == "Defined by Bio-Rad")) {
+    if (data.cluster[[x]]$quality == "Defined by Bio-Rad") {
       partition.volume <- 0.00085
-    } else if ((is.character(data.cluster[[x]]$quality)) &
-               (data.cluster[[x]]$quality != "Defined by Bio-Rad")) {
+    } else if (is.numeric(data.cluster[[x]]$quality)) {
+      partition.volume <- 0.000755
+    } else {
       partition.volume <- as.numeric(
         stringr::str_split(data.cluster[[x]]$quality, ": ")[[1]][2])
-    } else {
-      partition.volume <- 0.000755
     }
 
     pos_rate <- results$N.pos / results$totalwells
@@ -283,10 +281,13 @@ replicates_quant <- function(raw.results, sample.table) {
   if (!inherits(sample.table, "sample_table"))
     stop("'sample.table' must be an object of class sample_table")
 
-  if (is.character(raw.results[[1]]$quality)) {
+  if (raw.results[[1]]$quality == "Defined by Bio-Rad") {
     partition.volume <- 0.00085
-  } else {
+  } else if (is.numeric(raw.results[[1]]$quality)) {
     partition.volume <- 0.000755
+  } else {
+    partition.volume <- as.numeric(
+      stringr::str_split(raw.results[[1]]$quality, ": ")[[1]][2])
   }
 
   if (any(duplicated(sample.table$Sample.name))) {
