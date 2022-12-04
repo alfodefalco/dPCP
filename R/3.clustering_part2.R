@@ -388,6 +388,8 @@ plot.rain_reclus <- function(x, ..., sample = "all", color.blind = FALSE) {
 #'   Available formats: 'eps', 'ps', 'tex', 'pdf', 'jpeg', 'tiff', 'png',
 #'   'bmp', 'svg', 'wmf'.
 #' @param dpi numeric. Image resolution.
+#' @param color.blind logical. If TRUE colors optimized for colorblind
+#'   readers are used.
 #' @return A Shiny session.
 #' @examples
 #' \donttest{

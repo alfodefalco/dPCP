@@ -257,8 +257,8 @@ plot.dPCP <- function(x, ..., sample = "all", reference = "all",
       )
 
       p_sil <- ggplot(silh_data, aes(
-        x = Vic, y = Fam,
-        color = `Silhouette coefficient`)) +
+        x = silh_data$Vic, y = silh_data$Fam,
+        color = silh_data$`Silhouette coefficient`)) +
 
         geom_point(size = 1) +
 
