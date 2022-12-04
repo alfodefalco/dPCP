@@ -440,7 +440,7 @@ replicates_quant <- function(raw.results, sample.table) {
 #' }
 #' @export
 
-report_dPCP <- function(data, filename, sample = "all") {
+report_dPCP <- function(data, filename, sample = "all", color.blind = FALSE) {
 
   if (all(class(data) != "dPCP"))
     stop("data must be an object of class dPCP")
@@ -456,6 +456,9 @@ report_dPCP <- function(data, filename, sample = "all") {
   if (is.numeric(sample) &
       (any(sample < 1) | any(sample > length(data$samples))))
     stop("Undefined sample number selected")
+
+  if (!is.logical(color.blind))
+    stop("color.blind must be logical")
 
   if (all(sample == "all")) {
     export <- seq_along(data$sample)
@@ -502,12 +505,16 @@ report_dPCP <- function(data, filename, sample = "all") {
 
     text.p <- ggpubr::ggparagraph(text = tx, color = "black", size = 12)
 
+    if (isFALSE(color.blind)) {
+      cluscolors <- scales::hue_pal()(nrow(data$sample[[x]]$centers))
+    } else {
+      cluscolors <- c(
+        "gray70", "#004949", "#ff6db6", "#009292", "#ffb6db", "#490092",
+        "#006ddb", "#b66dff", "#6db6ff", "#b6dbff", "#920000", "#924900",
+        "#db6d00", "#24ff24", "#ffff6d",
+        "#000000")[1:nrow(data$sample[[x]]$centers)]
+    }
 
-    cluscolors <- c(
-      "gray70", "#004949", "#ff6db6", "#009292", "#ffb6db", "#490092",
-      "#006ddb", "#b66dff", "#6db6ff", "#b6dbff", "#920000", "#924900",
-      "#db6d00", "#24ff24", "#ffff6d",
-      "#000000")[1:nrow(data$sample[[x]]$centers)]
     names(cluscolors) <- row.names(data$sample[[x]]$centers)
 
     graph.p <- ggplot(as.data.frame(data$sample[[x]]$data),

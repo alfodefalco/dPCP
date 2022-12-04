@@ -40,6 +40,8 @@
 #' @param partition.volume numeric. This parameters is taken into account when
 #'   the parameter 'system' is set on Other. Indicate the partion volume in
 #'   microliters spcific to the digital PCR system.
+#' @param color.blind logical. If TRUE colors optimized for colorblind readers
+#'   are used.
 #' @rdname plot.dPCP
 #' @return An object of class \code{dPCP} containing the following components:
 #'   \item{referenceDB}{an object of class \code{reference_dbscan}.}
@@ -212,10 +214,12 @@ dPCP <- function(file, system = NULL, file.location = ".",
 #'   samples to be showed.
 #' @param type string. Type of plot to be showed. Available plots:
 #'   'reference dbscan', 'centers', 'cmeans', 'rain', 'dPCP'.
+#'   @param color.blind logical. If TRUE colors optimized for colorblind
+#'   readers are used.
 #' @export
 
 plot.dPCP <- function(x, ..., sample = "all", reference = "all",
-                      type = "dPCP") {
+                      type = "dPCP", color.blind = FALSE) {
 
   if (all(type != c("reference dbscan", "centers", "cmeans", "rain", "dPCP",
                     "silhouette")))
@@ -236,6 +240,9 @@ plot.dPCP <- function(x, ..., sample = "all", reference = "all",
       stop("The plot of silhoutte coefficients can be generated only when x is
            an object of class 'dPCP'")
 
+    if (!is.logical(color.blind))
+      stop("color.blind must be logical")
+
     if (all(sample == "all")) {
       plotsample <- 1:length(x$samples)
     } else {
@@ -250,8 +257,8 @@ plot.dPCP <- function(x, ..., sample = "all", reference = "all",
       )
 
       p_sil <- ggplot(silh_data, aes(
-        x = silh_data$Vic, y = silh_data$Fam,
-        color = silh_data$`Silhouette coefficient`)) +
+        x = Vic, y = Fam,
+        color = `Silhouette coefficient`)) +
 
         geom_point(size = 1) +
 
@@ -284,7 +291,7 @@ plot.dPCP <- function(x, ..., sample = "all", reference = "all",
         class(data) <- c("rain_reclus", "dPCP")
       }
 
-      graphics::plot(x = data, sample = sample)
+      graphics::plot(x = data, sample = sample, color.blind = color.blind)
     }
 }
 

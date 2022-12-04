@@ -111,11 +111,14 @@ cmeans_clus <- function(centers.data) {
 #' @inheritParams dPCP
 #' @export
 
-plot.cmeans_clus <- function(x, ..., sample = "all") {
+plot.cmeans_clus <- function(x, ..., sample = "all", color.blind = FALSE) {
 
   if (all(sample != "all") & any(sample > length(x)))
     stop("sample must be `all` or a numeric vector indicating the row number of
          samples in sample.table")
+
+  if (!is.logical(color.blind))
+    stop("color.blind must be logical")
 
   if (all(sample == "all")) {
     plotsample <- 1:length(x)
@@ -131,11 +134,17 @@ plot.cmeans_clus <- function(x, ..., sample = "all") {
       cluster  <-  x[[y]]$data[, ncol(x[[y]]$data) - 1]
     }
 
-    cluscolors <- c(
-      "gray70", "#004949", "#ff6db6", "#009292", "#ffb6db", "#490092",
-      "#006ddb", "#b66dff", "#6db6ff", "#b6dbff", "#920000", "#924900",
-      "#db6d00", "#24ff24", "#ffff6d",
-      "#000000")[1:(nrow(x[[y]]$centers))]
+    if (isFALSE(color.blind)) {
+      cluscolors <- scales::hue_pal()(nrow(x[[y]]$centers))
+    } else {
+      cluscolors <- c(
+        "gray70", "#004949", "#ff6db6", "#009292", "#ffb6db", "#490092",
+        "#006ddb", "#b66dff", "#6db6ff", "#b6dbff", "#920000", "#924900",
+        "#db6d00", "#24ff24", "#ffff6d",
+        "#000000")[1:(nrow(x[[y]]$centers))]
+    }
+
+
     names(cluscolors) <- row.names(x[[y]]$centers)
 
     p <- ggplot(as.data.frame(x[[y]]$data),
@@ -296,11 +305,14 @@ rain_reclus <- function(cmeans.cluster) {
 #' @inheritParams dPCP
 #' @export
 
-plot.rain_reclus <- function(x, ..., sample = "all") {
+plot.rain_reclus <- function(x, ..., sample = "all", color.blind = FALSE) {
 
   if (all(sample != "all") & any(sample > length(x)))
     stop("sample must be `all` or a numeric vector indicating the row number of
          samples in sample.table")
+
+  if (!is.logical(color.blind))
+    stop("color.blind must be logical")
 
   if (all(sample == "all")) {
     plotsample <- 1:length(x)
@@ -317,11 +329,16 @@ plot.rain_reclus <- function(x, ..., sample = "all") {
       cluster  <-  x[[y]]$data[, ncol(x[[y]]$data)]
     }
 
-    cluscolors <- c(
-      "gray70", "#004949", "#ff6db6", "#009292", "#ffb6db", "#490092",
-      "#006ddb", "#b66dff", "#6db6ff", "#b6dbff", "#920000", "#924900",
-      "#db6d00", "#24ff24", "#ffff6d",
-      "#000000")[1:nrow(x[[y]]$centers)]
+    if (isFALSE(color.blind)) {
+      cluscolors <- scales::hue_pal()(nrow(x[[y]]$centers))
+    } else {
+      cluscolors <- c(
+        "gray70", "#004949", "#ff6db6", "#009292", "#ffb6db", "#490092",
+        "#006ddb", "#b66dff", "#6db6ff", "#b6dbff", "#920000", "#924900",
+        "#db6d00", "#24ff24", "#ffff6d",
+        "#000000")[1:nrow(x[[y]]$centers)]
+    }
+
     names(cluscolors) <- row.names(x[[y]]$centers)
 
     p <- ggplot(as.data.frame(x[[y]]$data),
@@ -393,10 +410,13 @@ plot.rain_reclus <- function(x, ..., sample = "all") {
 #' @import shiny
 
 manual_correction <- function(data, filename, save.plot = FALSE,
-                              format = "png", dpi = 300) {
+                              format = "png", dpi = 300, color.blind = FALSE) {
 
   if (all(class(data) != c("dPCP")))
     stop("data must be an object of class dPCP")
+
+  if (!is.logical(color.blind))
+    stop("color.blind must be logical")
 
   if (!is.character(filename) ||
       (is.character(filename) & length(filename) > 1))
@@ -541,15 +561,25 @@ manual_correction <- function(data, filename, save.plot = FALSE,
       #Create an action button for each predited cluster
       lapply(seq(nrow(centers.data())), function(x) {
 
-        buttons.colors <- c(
-          "gray70", "#004949", "#ff6db6", "#009292", "#ffb6db", "#490092",
-          "#006ddb", "#b66dff", "#6db6ff", "#b6dbff", "#920000", "#924900",
-          "#db6d00", "#24ff24", "#ffff6d",
-          "#000000")[1:nrow(centers.data())]
+        if (isFALSE(color.blind)) {
+          buttons.colors <- scales::hue_pal()(nrow(centers.data()))
 
-        background.color <- paste0(
-          "background-color:", buttons.colors[x], "; border-color: black", ";
+          background.color <- paste0(
+            "background-color:", buttons.colors[x], "; border-color: black", ";
+          font-weight: bold", "; color: black")
+        } else {
+          buttons.colors <- c(
+            "gray70", "#004949", "#ff6db6", "#009292", "#ffb6db", "#490092",
+            "#006ddb", "#b66dff", "#6db6ff", "#b6dbff", "#920000", "#924900",
+            "#db6d00", "#24ff24", "#ffff6d",
+            "#000000")[1:nrow(centers.data())]
+
+          background.color <- paste0(
+            "background-color:", buttons.colors[x], "; border-color: black", ";
           font-weight: bold", "; color: grey")
+        }
+
+
 
 
         in.clus$buttons[[x]] <- actionButton(
@@ -582,11 +612,16 @@ manual_correction <- function(data, filename, save.plot = FALSE,
 
     output$finalplot <- renderPlot( {
 
-      cluscolors <- c(
-        "gray70", "#004949", "#ff6db6", "#009292", "#ffb6db", "#490092",
-        "#006ddb", "#b66dff", "#6db6ff", "#b6dbff", "#920000", "#924900",
-        "#db6d00", "#24ff24", "#ffff6d",
-        "#000000")[1:nrow(centers.data())]
+      if (isFALSE(color.blind)) {
+        cluscolors <- scales::hue_pal()(nrow(centers.data()))
+      } else {
+        cluscolors <- c(
+          "gray70", "#004949", "#ff6db6", "#009292", "#ffb6db", "#490092",
+          "#006ddb", "#b66dff", "#6db6ff", "#b6dbff", "#920000", "#924900",
+          "#db6d00", "#24ff24", "#ffff6d",
+          "#000000")[1:nrow(centers.data())]
+      }
+
       names(cluscolors) <- rownames(centers.data())
       ggplot(dataplot(), aes_string(x = "Vic", y = "Fam")) +
 
@@ -934,11 +969,16 @@ manual_correction <- function(data, filename, save.plot = FALSE,
 
           text.p <- ggpubr::ggparagraph(text = tx, color = "black", size = 12)
 
-          cluscolors <- c(
-            "gray70", "#004949", "#ff6db6", "#009292", "#ffb6db", "#490092",
-            "#006ddb", "#b66dff", "#6db6ff", "#b6dbff", "#920000", "#924900",
-            "#db6d00", "#24ff24", "#ffff6d",
-            "#000000")[1:nrow(data$samples[[x]]$centers)]
+          if (isFALSE(color.blind)) {
+            cluscolors <- scales::hue_pal()(nrow(data$samples[[x]]$centers))
+          } else {
+            cluscolors <- c(
+              "gray70", "#004949", "#ff6db6", "#009292", "#ffb6db", "#490092",
+              "#006ddb", "#b66dff", "#6db6ff", "#b6dbff", "#920000", "#924900",
+              "#db6d00", "#24ff24", "#ffff6d",
+              "#000000")[1:nrow(data$samples[[x]]$centers)]
+          }
+
           names(cluscolors) <- rownames(data$samples[[x]]$centers)
 
           graph.p <- ggplot(manual.mod$clus[[x]], aes_string(x = "Vic",

@@ -152,11 +152,6 @@ dbscan_combination <- function(refID, system = NULL, file.location = ".",
       p <- ggplot(as.data.frame(submatrix), aes_string(x = "Vic", y = "Fam")) +
 
         geom_point(size = 0.5, aes(color = factor(dbclus$cluster))) +
-        scale_color_manual(values = c(
-          "gray70", "#004949", "#ff6db6", "#009292", "#ffb6db", "#490092",
-          "#006ddb", "#b66dff", "#6db6ff", "#b6dbff", "#920000", "#924900",
-          "#db6d00", "#24ff24", "#ffff6d",
-          "#000000")) +
 
         geom_point(size = 0.5,
                    data = as.data.frame(submatrix)[dbclus$cluster == 0, ],

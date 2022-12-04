@@ -216,12 +216,6 @@ plot.reference_dbscan <- function(x, ..., reference = "all") {
       geom_point(
         size = 0.9, aes(color = factor(x[[y]]$dbscan$cluster))) +
 
-      scale_color_manual(values = c(
-        "gray70", "#004949", "#ff6db6", "#009292", "#ffb6db", "#490092",
-        "#006ddb", "#b66dff", "#6db6ff", "#b6dbff", "#920000", "#924900",
-        "#db6d00", "#24ff24", "#ffff6d",
-        "#000000")) +
-
       geom_point(
         size = 0.9,
         data = as.data.frame(
