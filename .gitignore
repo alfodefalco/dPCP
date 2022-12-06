@@ -3,7 +3,7 @@ Meta
 tests
 .Rbuildignore
 cran-comments.md
-.Rproj
+*.Rproj
 .DS_Store
 
 # History files
