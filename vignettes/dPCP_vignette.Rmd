@@ -188,7 +188,8 @@ The combinations (E) and (F) identified the empty partitions cluster and all sin
 5. C-means, rain analysis, and silhouette coefficient. The S3 method *plot* is available also to show the scatterplot of c-means, rain analysis, and silhouette coefficient.
 
 In order to evaluate the structure of the original dPCP clustering in terms of cluster cohesion and separation, the silhouette coefficient (Rousseeuw, 1987) is calculated for each sample. According to Kaufman and Rousseeuw (Kaufman and Rousseeuw, 1990), the mean value of silhouette coefficient has to be interpreted as follow:
--	between 0.71 and 1: the clustering structure is strong
+
+- between 0.71 and 1: the clustering structure is strong
 -	between 0.51 and 0.70: the clustering structure is reasonable;
 -	between 0.26 and 0.50: the clustering structure is weak and could be artificial;
 -	lower than 0.25: no substantial structure.
