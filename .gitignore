@@ -3,8 +3,7 @@ Meta
 tests
 .Rbuildignore
 cran-comments.md
-dPCP.Rproj
-.Rproj.user
+.Rproj
 .DS_Store
 
 # History files
@@ -49,3 +48,5 @@ docs/
 
 # translation temp files
 po/*~
+/doc/
+/Meta/
