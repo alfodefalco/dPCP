@@ -1,7 +1,6 @@
----
-title: 'Digital PCR Cluster Predictor: a universal R-package and shiny app for the
-  automated analysis of multiplex digital PCR data'
----
+
+# Digital PCR Cluster Predictor: a universal R-package and shiny app for the automated analysis of multiplex digital PCR data
+
 
 ## Introduction
 Digital polymerase chain reaction (dPCR) is a PCR-based technology that enables
