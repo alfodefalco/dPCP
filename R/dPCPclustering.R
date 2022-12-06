@@ -35,7 +35,7 @@
 #'   \code{save.template} can be also a character vector indicating the chipID.
 #' @param rain logical. If TRUE the rain analysis is carried out.
 #' @param QC.reference logical. If TRUE the fraction of rain elements in the
-#'   reference samples is carried out. Warning messages are displayed when the
+#'   reference samples is calculated. Warning messages are displayed when the
 #'   percentage of rain is high.
 #' @param partition.volume numeric. This parameters is taken into account when
 #'   the parameter 'system' is set on Other. Indicate the partion volume in
