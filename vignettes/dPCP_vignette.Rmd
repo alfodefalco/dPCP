@@ -152,7 +152,7 @@ quant <- target_quant(rainclus, sample.table)
 rep.quant <- replicates_quant(quant, sample.table) 
 ```
 
-dPCP is available also as web app accessible through a web browser at https://dpcp.lns.lu/.
+dPCP is available also as web app accessible through a web browser at dpcp.lns.lu
 
 
 ## Quality control
