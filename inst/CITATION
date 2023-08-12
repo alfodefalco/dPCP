@@ -1,14 +1,21 @@
 citHeader("To cite dPCP use:")
 
-citEntry(entry = "Article",
-  author = personList(as.person("Alfonso De Falco"),
-  as.person("Christophe M Olinger"), as.person(" Barbara Klink"),
-  as.person("Michel Mittelbronn"), as.person("Daniel Stieber")),
-  title    = "Digital PCR cluster predictor: a universal R-package and shiny app for the automated analysis of multiplex digital PCR data",
-  journal  = "Bioinformatics",
-  year     = 2023,
-  volume   = "39",
-  number   = "5",
-  doi    = "https://doi.org/10.1093/bioinformatics/btad282",
+bibentry(bibtype = "Article",
+  title        = "Digital PCR cluster predictor: a universal R-package and shiny app for the automated analysis of multiplex digital PCR data",
+  author       = c(person(given = "Alfonso",
+                          family = "De Falco"),
+                   person(given = "Christophe M",
+                          family = "Olinger"),
+                   person(given = "Barbara",
+                          family = "Klink"),
+                   person(given = "C Michel",
+                          family = "Mittelbronn"),
+                   person(given = "Daniel",
+                          family = "Stieber")),
+  journal      = "Bioinformatics",
+  year         = "2023",
+  volume       = "39",
+  number       = "5",
+  doi          = "10.1093/bioinformatics/btad282"
 )
 
