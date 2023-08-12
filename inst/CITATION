@@ -1,7 +1,7 @@
 citHeader("To cite dPCP use:")
 
 citEntry(entry = "Article",
-  uthor = personList(as.person("Alfonso De Falco"),
+  author = personList(as.person("Alfonso De Falco"),
   as.person("Christophe M Olinger"), as.person(" Barbara Klink"),
   as.person("Michel Mittelbronn"), as.person("Daniel Stieber")),
   title    = "Digital PCR cluster predictor: a universal R-package and shiny app for the automated analysis of multiplex digital PCR data",
