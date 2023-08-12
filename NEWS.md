@@ -12,3 +12,6 @@ Additional QC for the reference to calculate the percentage of rain elements
 Added option to select colors optimized for color blindness
 Added calculation of silhouette coefficient to evaluate the clustering structure
 Updated vignette
+
+# dPCP 2.0.1
+New citation
